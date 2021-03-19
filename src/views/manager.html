@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>With B - Manager</title>
+  <script src="https://unpkg.com/vue"></script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+    }
+    html {
+      font-family: Verdana, Geneva, Tahoma, sans-serif;
+      background-color: white;
+    }
+    body {
+      max-width: 600px;
+      margin-left: auto;
+      margin-right: auto;
+      background-color: lightgrey;
+      padding: 20px;
+    }
+    h1, h2, h3, p {
+      margin-top: 20px;
+    }
+    .btn {
+      display: inline-block;
+      background-color: rgb(166, 166, 194);
+      padding: 5px;
+      border-radius: 3px;
+      cursor: pointer;
+    }
+    input {
+      padding: 5px; 
+      border: none;
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <div v-if="!report">Loading ...</div>
+    <div v-else>
+      <h1>Game {{ gameId }}</h1>
+      <h2>Players in lobby :</h2><br>
+      <ul>
+        <li v-for="player in report.lobby">
+          {{ player }}
+        </li>
+      </ul>
+      <p></p>
+    </div>
+  </div>
+</body>
+<footer>
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+    const socket = io();
+    const [gameId] = window.location.pathname.split('/').slice(-1)
+
+    var app = new Vue({
+      el: '#app',
+      data: {
+        gameId: gameId,
+        report: null
+      }
+    })
+
+    socket.emit('joinRoom', gameId);
+    
+    socket.on('hello', nickname => {
+      console.log(`${nickname} said hello.`)
+      socket.emit('getReport', gameId)
+    })
+
+    socket.on('report', report => app.report=JSON.parse(report))
+
+    socket.on('doesnt exists', ()=>alert("Game doesn't longer exist :("))
+
+    socket.emit('getReport', gameId)
+    
+  </script>
+</footer>
+</html>

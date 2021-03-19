@@ -1,4 +1,5 @@
 import { Request, Response, Router } from "express";
+import { Server } from "socket.io";
 import { Game } from "./game";
 
 let router = Router()
@@ -10,10 +11,12 @@ router.get('/', (req: Request, res: Response) => {
 
 // Game creation
 router.get('/create', (req: Request, res: Response) => {
-  let games: Game[] = req.app.get('games')
+  let games: any = req.app.get('games')
   // Add a new game to the list
   let newGame = new Game()
-  games.push(newGame)
+  games[newGame.id] = newGame
+  console.log('Created game : ' + newGame.id)
+  console.log('Games : ', Object.keys(games))
   // Redirect the creator to the manager interface
   res.redirect(`/manager/${newGame.id}`)
 })
