@@ -4,6 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>With B - Play</title>
+  <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+  <script src="https://unpkg.com/vue"></script>
   <style>
     * {
       margin: 0;
@@ -37,26 +39,85 @@
   </style>
 </head>
 <body>
-  <h1>Room</h1>
-  <p></p>
+  <div id="app">
+    <div v-if="!report">Loading ...</div>
+    <div v-else>
+      <h1>Game {{ gameId }}</h1>
+
+      <!-- Game has started -->
+      <div v-if="report.started">
+        <p>Connected players : {{ report.players.length }}</p>
+        <h2>My traits :</h2>
+        <ul>
+          <li v-for="trait in me.traits">{{ trait }}</li>
+        </ul>
+        <h2>Relationships :</h2>
+        I am in a relationship with {{ me.previous }} but he/she 
+        doesn't know I'm cheating on him/her with {{ me.next }}
+      </div>
+
+      <!-- Game hasn't started -->
+      <div v-else>
+        <h2>Lobby ({{ report.lobby.length }} players):</h2><br>
+        <ul>
+          <li v-for="player in report.lobby">
+            {{ player }}
+          </li>
+        </ul>
+        <p>Waiting players before starting...</p>
+      </div>
+
+    </div>
+  </div>
 </body>
 <footer>
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
   <script src="/socket.io/socket.io.js"></script>
   <script>
+    // Open socket.io connection and parse URL to get gameId and nickname
     const socket = io()
     let [gameId, nickname] = window.location.pathname.split('/').slice(1)
     nickname = decodeURI(nickname)
     console.log(gameId, nickname)
 
-    socket.emit('joinRoom', gameId)
+    // Load a reactive Vue app
+    var app = new Vue({
+      el: '#app',
+      data: {
+        gameId: gameId,
+        report: null
+      },
+      computed: {
+        me: () => app.report.players.find(p=>p.name==nickname)
+      }
+    })
 
-    socket.emit('hello', {
+    // Notify the server that we are part of a specific game
+    socket.emit('joinRoom', gameId);
+
+    // When someone sends 'hello' ask for a new report
+    socket.on('hello', nickname => {
+      Toastify({
+        text: `${nickname} connected`,
+        className: "info",
+      }).showToast();
+      socket.emit('getReport', gameId)
+    })
+    
+    // When server sends a fresh report, update the Vue app
+    socket.on('report', report => app.report=JSON.parse(report))
+    socket.on('report', report => console.log(JSON.parse(report)))
+
+    // Errors handling
+    socket.on('doesnt exists', ()=>alert("Game doesn't longer exist :("))
+    socket.on('already taken', ()=>alert("Nickname already taken :("))
+
+    // Ask the server to send a full game report
+    socket.emit("hello", {
       gameId: gameId,
       content: nickname
     })
-    
-    socket.on('doesnt exists', ()=>alert("Game doesn't longer exist :("))
-    socket.on('already taken', ()=>alert("Nickname already taken :("))
+    socket.emit('getReport', gameId)
 
   </script>
 </footer>

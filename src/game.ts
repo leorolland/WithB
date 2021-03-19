@@ -1,4 +1,4 @@
-import { Person } from "./generator";
+import { createCircle, Person } from "./generator";
 
 export class Game {
 
@@ -8,12 +8,14 @@ export class Game {
   // When the game starts, players in the lobby are converted to players
   players: Person[]
   createdAt: Date
+  started: boolean
 
   constructor() {
     this.id = Math.random().toString(36).substring(2, 8).toUpperCase()
     this.lobby = []
     this.players = []
     this.createdAt = new Date()
+    this.started = false
   }
 
   addToLobby(nickname: string) {
@@ -29,7 +31,9 @@ export class Game {
   }
 
   start() {
-    
+    this.players = createCircle(this.lobby)
+    this.lobby = []
+    this.started = true
   }
 
 }

@@ -42,7 +42,7 @@ export function io(httpServer: any, games: any) {
       // Get the corresponding game if it exists, else leave
       if (!checkExists(games, gameId, socket)) return
       const game: Game = games[gameId]
-      // Send the report
+      // Send a report to everyone
       socket.emit('report', game.jsonReport())
     })
 
@@ -51,7 +51,10 @@ export function io(httpServer: any, games: any) {
       // Get the corresponding game if it exists, else leave
       if (!checkExists(games, gameId, socket)) return
       const game: Game = games[gameId]
+      // Start game
       game.start()
+      // Send a report to everyone
+      socket.emit('report', game.jsonReport())
     })
 
   })
