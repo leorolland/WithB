@@ -52,18 +52,28 @@
   </p>
   <h2>Join a game</h2>
   <p>Please fill the following form to join your mates :</p>
-  <input type="text" name="game-id" id="game-id" placeholder="Game ID">
-  <input type="text" name="game-nickname" id="game-nickname" placeholder="Your name (or nickname)">
-  <span class="btn" id="join">Join</span>
+  <input  id="id"    type="text"  placeholder="Game ID">
+  <input  id="name"  type="text"  placeholder="Your name (or nickname)">
+  <span   id="join"  class="btn">Join</span>
   <h2>Create a game</h2>
-  <p>Create a party and invite your friends : <span class="btn">Create a game</span></p>
+  <p>Create a party and invite your friends : <span id="create" class="btn">Create a game</span></p>
 </body>
 <footer>
   <script>
-    let joinBtn = document.getElementById('join')
+
+    const id = document.getElementById('id')
+    const name = document.getElementById('name')
+    const joinBtn = document.getElementById('join')
+
     joinBtn.addEventListener('click', () => {
-      window.location.replace('/aaa/bbb')
+      window.location.replace(`/${id.value}/${encodeURI(name.value)}`)
     })
+
+    const create = document.getElementById('create')
+    create.addEventListener('click', () => {
+      window.location.replace('/create')
+    })
+
   </script>
 </footer>
 </html>
