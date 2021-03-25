@@ -30,9 +30,11 @@ You have at leats **1 common trait** with a person you are in a relationship wit
 # Contributing
 
 ## Installation
+- You need NodeJs (tested on v15)
 - Clone the repository and navigate to the folder
 - Install the dependencies : `npm install`
 - Run the development server : `npm run dev`
+- Navigate to `http://localhost:8080/` or run the test script
 
 ## Testing
 You can simulate a game with 10 players and see both the manager and the player view.
