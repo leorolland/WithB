@@ -36,6 +36,9 @@
       padding: 5px; 
       border: none;
     }
+    #graph {
+      height: 50vh;
+    }
   </style>
 </head>
 <body>
@@ -47,6 +50,7 @@
       <!-- Game has started -->
       <div v-if="report.started">
         <p>Connected players : {{ report.players.length }}</p>
+        <div id="graph"></div>
       </div>
 
       <!-- Game hasn't started -->
@@ -65,6 +69,7 @@
 </body>
 <footer>
   <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+  <script type="text/javascript" src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
   <script src="/socket.io/socket.io.js"></script>
   <script>
     // Open socket.io connection and parse URL to get gameId
@@ -98,7 +103,10 @@
     })
 
     // When server sends a fresh report, update the Vue app
-    socket.on('report', report => app.report=JSON.parse(report))
+    socket.on('report', report => {
+      app.report=JSON.parse(report)
+      if (app.report.started) setTimeout(()=>updateGraph(), 500)
+    })
     socket.on('report', report => console.log(JSON.parse(report)))
 
     // Errors handling
@@ -106,7 +114,33 @@
 
     // Ask the server to send a full game report
     socket.emit('getReport', gameId)
+
+    function updateGraph() {
+      let players = app.report.players.map(player => { return { id: player.name, label: player.name } })
+      let links = app.report.players.map(player => { return { 
+        from: player.name,
+        to: player.next,
+        label: commonTraits(player, app.report.players.find(p=>p.name==player.next)).join(", ") 
+      } })
+      let container = document.getElementById('graph')
+      let data = {
+        nodes: new vis.DataSet(players),
+        edges: new vis.DataSet(links)
+      }
+      let network = new vis.Network(container, data, {})
+    }
     
+    function commonTraits(p1, p2) {
+      console.log(p1, p2)
+      traits = []
+      p1.traits.forEach(t => {
+        if (p2.traits.includes(t)) {
+          traits.push(t)
+        }
+      })
+      return traits
+    }
+
   </script>
 </footer>
 </html>
