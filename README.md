@@ -1,4 +1,4 @@
-<img src="doc/logo.png" width=250 height=250 align="center">
+<center><img src="doc/logo.png" width=250 height=250 ></center>
 
 # WithB
 
