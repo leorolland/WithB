@@ -1,0 +1,51 @@
+* {
+    margin: 0;
+    padding: 0;
+  }
+  html {
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    background-color: white;
+  }
+  body {
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+    background-color: lightgrey;
+    padding: 20px;
+  }
+  h1, h2, h3, p {
+    margin-top: 20px;
+  }
+  .btn {
+    display: inline-block;
+    background-color: rgb(166, 166, 194);
+    padding: 5px;
+    border-radius: 3px;
+    cursor: pointer;
+  }
+  input {
+    padding: 5px; 
+    border: none;
+  }
+  .modal{
+    
+    position: absolute;
+    z-index: 1;
+    top: 10%;
+    left: 50%;
+    margin-left: auto;
+    margin-right: auto;
+    transition: all 0.5s;
+  }
+  .subclass{
+      background-color: #f5bcd7 ;
+      position: relative;
+      left : -50%;
+      height : 80vh;
+      width: 80vw;
+  }
+
+  .hidden {
+      transform : translateY(100vh);
+      transition: all 0.5s;
+  }

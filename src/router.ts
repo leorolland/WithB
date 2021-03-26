@@ -21,6 +21,11 @@ router.get('/create', (req: Request, res: Response) => {
   res.redirect(`/manager/${newGame.id}`)
 })
 
+//
+router.get('/style.css', (req: Request, res: Response) => {
+  res.sendFile(__dirname + '/views/style.css')
+})
+
 // Game Manager
 router.get('/manager/:gameId', (req: Request, res: Response) => {
   res.sendFile(__dirname + '/views/manager.html')

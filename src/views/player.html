@@ -6,44 +6,18 @@
   <title>With B - Play</title>
   <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
   <script src="https://unpkg.com/vue"></script>
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-    }
-    html {
-      font-family: Verdana, Geneva, Tahoma, sans-serif;
-      background-color: white;
-    }
-    body {
-      max-width: 600px;
-      margin-left: auto;
-      margin-right: auto;
-      background-color: lightgrey;
-      padding: 20px;
-    }
-    h1, h2, h3, p {
-      margin-top: 20px;
-    }
-    .btn {
-      display: inline-block;
-      background-color: rgb(166, 166, 194);
-      padding: 5px;
-      border-radius: 3px;
-      cursor: pointer;
-    }
-    input {
-      padding: 5px; 
-      border: none;
-    }
-  </style>
+  <link rel="stylesheet" href="/style.css">
 </head>
 <body>
   <div id="app">
     <div v-if="!report">Loading ...</div>
     <div v-else>
       <h1>Game {{ gameId }}</h1>
-
+      <div class="modal" v-bind:class="{ hidden: !isVisible}">
+        <div class="subclass">
+          Test
+        </div> 
+      </div>
       <!-- Game has started -->
       <div v-if="report.started">
         <p>Connected players : {{ report.players.length }}</p>
@@ -85,7 +59,8 @@
       el: '#app',
       data: {
         gameId: gameId,
-        report: null
+        report: null,
+        isVisible : false,
       },
       computed: {
         me: () => app.report.players.find(p=>p.name==nickname)
