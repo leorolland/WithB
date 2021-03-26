@@ -1,5 +1,7 @@
-<img src="doc/logo.png">
+<img src="doc/logo.png" width=250 height=250>
+
 # WithB
+
 An *IRL* interactive roleplay game to learn how to cheat on your relatives. 
 
 > Who is that ho* Bryan ?!
