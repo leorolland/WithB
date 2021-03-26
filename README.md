@@ -1,3 +1,4 @@
+<img src="doc/logo.png">
 # WithB
 An *IRL* interactive roleplay game to learn how to cheat on your relatives. 
 
