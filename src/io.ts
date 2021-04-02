@@ -57,7 +57,6 @@ export function io(httpServer: any, games: any) {
       socket.to(gameId).emit('report', game.jsonReport()) // sends to other players
       socket.emit('report', game.jsonReport()) // sends to the manager
     })
-
   })
 
   return io
