@@ -43,9 +43,10 @@
       left : -50%;
       height : 80vh;
       width: 80vw;
+      text-align: center;
   }
 
   .hidden {
-      transform : translateY(100vh);
+      transform : translateY(-100vh);
       transition: all 0.5s;
   }

@@ -15,7 +15,20 @@
       <h1>Game {{ gameId }}</h1>
       <div class="modal" v-bind:class="{ hidden: !isVisible}">
         <div class="subclass">
-           <h2>Nouveau message</h2>
+          <div v-if="mode=='buzz'">
+            <h2>You want to charge 2 players</h2>
+            <p> Who do you want to charge ? </p>
+            <p>Your Mate</p>
+            <select>
+              <option v-bind:value = "me.previous"> {{ me.previous }}</option>           
+              <option v-bind:value = "me.next"> {{ me.next }}</option>
+            </select>
+            <p>The player they are cheating on you with</p>
+            <select>
+              <option v-for="player in report.players" v-bind:value = "player.name"> {{ player.name }}</option>           
+            </select>
+            <p><span class="btn" v-on:click="charge">Charge</span></p>
+          </div>
         </div> 
       </div>
       <!-- Game has started -->
@@ -28,6 +41,7 @@
         <h2>Relationships :</h2>
         I am in a relationship with {{ me.previous }} but he/she 
         doesn't know I'm cheating on him/her with {{ me.next }}
+        <p><span class="btn" v-on:click="buzz">Charge someone</span></p>
       </div>
 
       <!-- Game hasn't started -->
@@ -61,9 +75,21 @@
         gameId: gameId,
         report: null,
         isVisible : false,
+        mode : ""
       },
       computed: {
         me: () => app.report.players.find(p=>p.name==nickname)
+        
+      },
+      methods : {
+        buzz: () => {
+          app.isVisible = true
+          app.mode = "buzz"
+        },
+
+        charge: () => {
+          app.isVisible = false
+        }
       }
     })
 
@@ -93,6 +119,10 @@
       content: nickname
     })
     socket.emit('getReport', gameId)
+
+    //Buzz handling
+
+
 
   </script>
 </footer>
