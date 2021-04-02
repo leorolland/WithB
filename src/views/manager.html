@@ -18,6 +18,21 @@
       <div v-if="report.started">
         <p>Connected players : {{ report.players.length }}</p>
         <div id="graph"></div>
+
+        <!-- Drop down menu for events -->
+        <div id="app">
+          <select v-for="event in events"
+                  v-model="events.selectedOption">
+            <option v-for="option in event.options" :value="option">
+              {{option}}
+            </option>
+          </select>    
+          <span>Selected : {{events.selectedOption}}</span>   
+          <p><span class="btn" v-on:click="createEvent(events.selectedOption)">Create event</span> </p>
+  
+        </div>
+
+
       </div>
 
       <!-- Game hasn't started -->
@@ -42,18 +57,26 @@
     // Open socket.io connection and parse URL to get gameId
     const socket = io();
     const [gameId] = window.location.pathname.split('/').slice(-1)
+    const events = [
+      {
+        options:["Treachery/Trust", "Mission", "Question"],
+        selectedOption: "Treachery/Trust"
+      }
+    ]
 
     // Load a reactive Vue app
     var app = new Vue({
       el: '#app',
       data: {
         gameId: gameId,
-        report: null
+        report: null,
+        events
       },
       methods: {
         start: function(event) {
           if (app.report.lobby.length > 4) socket.emit('startGame', gameId)
-        }
+        },
+        createEvent
       }
     })
 
@@ -108,6 +131,11 @@
       return traits
     }
 
+    //When the manager wants to create an event (WIP, just sends it in the air for now)
+    function createEvent(event) {
+      console.log(event)
+      socket.emit("event",event)
+    }
   </script>
 </footer>
 </html>
