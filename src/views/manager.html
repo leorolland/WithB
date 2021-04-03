@@ -28,7 +28,7 @@
             </option>
           </select>    
           <span>Selected : {{events.selectedOption}}</span>   
-          <p><span class="btn" v-on:click="createEvent(events.selectedOption)">Create event</span> </p>
+          <p><span class="btn" v-on:click="createEvent(gameId,events.selectedOption)">Create event</span> </p>
   
         </div>
 
@@ -132,9 +132,11 @@
     }
 
     //When the manager wants to create an event (WIP, just sends it in the air for now)
-    function createEvent(event) {
-      console.log(event)
-      socket.emit("event",event)
+    function createEvent(gameId,event) {
+      socket.emit("event", {
+      gameId: gameId,
+      event: event
+    })
     }
   </script>
 </footer>
