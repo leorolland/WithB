@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,6 +9,7 @@
   <script src="https://unpkg.com/vue"></script>
   <link rel="stylesheet" href="/style.css">
 </head>
+
 <body>
   <div id="app">
     <div v-if="!report">Loading ...</div>
@@ -15,21 +17,23 @@
       <h1>Game {{ gameId }}</h1>
       <div class="modal" v-bind:class="{ hidden: !isVisible}">
         <div class="subclass">
+          <div class="cross btn" v-on:click="close">x</div>
           <div v-if="mode=='buzz'">
             <h2>You want to charge 2 players</h2>
             <p> Who do you want to charge ? </p>
             <p>Your Mate</p>
-            <select>
-              <option v-bind:value = "me.previous"> {{ me.previous }}</option>           
-              <option v-bind:value = "me.next"> {{ me.next }}</option>
+            <select v-model="selectedMate">
+              <option v-bind:value="me.previous"> {{ me.previous }}</option>
+              <option v-bind:value="me.next"> {{ me.next }}</option>
+
             </select>
             <p>The player they are cheating on you with</p>
-            <select>
-              <option v-for="player in report.players" v-bind:value = "player.name"> {{ player.name }}</option>           
+            <select v-model="selectedOther">
+              <option v-for="player in others" v-bind:value="player.name"> {{ player.name }}</option>
             </select>
-            <p><span class="btn" v-on:click="charge">Charge</span></p>
+            <p><span class="btn" v-on:click="charge">Charge (buzzes left : {{counterBuzz }})</span></p>
           </div>
-        </div> 
+        </div>
       </div>
       <!-- Game has started -->
       <div v-if="report.started">
@@ -39,7 +43,7 @@
           <li v-for="trait in me.traits">{{ trait }}</li>
         </ul>
         <h2>Relationships :</h2>
-        I am in a relationship with {{ me.previous }} but he/she 
+        I am in a relationship with {{ me.previous }} but he/she
         doesn't know I'm cheating on him/her with {{ me.next }}
         <p><span class="btn" v-on:click="buzz">Charge someone</span></p>
       </div>
@@ -74,24 +78,54 @@
       data: {
         gameId: gameId,
         report: null,
-        isVisible : false,
-        mode : ""
+        isVisible: false,
+        mode: "",
+        selectedMate: "",
+        selectedOther: "",
+        counterBuzz: 3
       },
       computed: {
-        me: () => app.report.players.find(p=>p.name==nickname)
-        
+        me: () => app.report.players.find(p => p.name == nickname),
+        others: () => app.report.players.filter(p => (p.name != app.me.previous) && (p.name != app.me.next) && (p.name != nickname))
       },
-      methods : {
+      methods: {
         buzz: () => {
-          app.isVisible = true
-          app.mode = "buzz"
+          if (app.counterBuzz > 0) {
+            app.isVisible = true
+            app.mode = "buzz"
+          }
         },
 
         charge: () => {
           app.isVisible = false
+          assumption = verifyAssumption(app.selectedMate, app.selectedOther)
+          if (!assumption) {
+            socket.emit("chargeFail", {
+              gameId: gameId,
+              content: [app.selectedMate, app.selectedOther]
+            })
+            Toastify({
+              text: `${app.selectedMate} and ${app.selectedOther} aren't in a relationship`,
+              className: "error",
+              backgroundColor: "linear-gradient(to right, #FF0000, #8B0000)",
+              duration: 5000,
+            }).showToast();
+            app.counterBuzz--;
+          }
+          //TODO : see what to do when assumption = true
+
+        },
+
+        close: () => {
+          app.isVisible = false
         }
       }
     })
+
+    function verifyAssumption(mate, other) {
+      mate = app.report.players.find(p => p.name == mate)
+      return mate.previous == other || mate.next == other
+    }
 
     // Notify the server that we are part of a specific game
     socket.emit('joinRoom', gameId);
@@ -104,14 +138,14 @@
       }).showToast();
       socket.emit('getReport', gameId)
     })
-    
+
     // When server sends a fresh report, update the Vue app
-    socket.on('report', report => app.report=JSON.parse(report))
+    socket.on('report', report => app.report = JSON.parse(report))
     socket.on('report', report => console.log(JSON.parse(report)))
 
     // Errors handling
-    socket.on('doesnt exists', ()=>alert("Game doesn't longer exist :("))
-    socket.on('already taken', ()=>alert("Nickname already taken :("))
+    socket.on('doesnt exists', () => alert("Game doesn't longer exist :("))
+    socket.on('already taken', () => alert("Nickname already taken :("))
 
     // Ask the server to send a full game report
     socket.emit("hello", {
@@ -121,9 +155,16 @@
     socket.emit('getReport', gameId)
 
     //Buzz handling
-
-  // get an event
-  socket.on('event', event => {
+    socket.on('chargeFail', content => {
+      Toastify({
+        text: `${content[0]} and ${content[1]} aren't in a relationship`,
+        className: "error",
+        backgroundColor: "linear-gradient(to right, #FF0000, #8B0000)",
+        duration: 5000,
+      }).showToast();
+    })
+    // get an event
+    socket.on('event', event => {
       Toastify({
         text: `${event} happen`,
         className: "info",
@@ -132,4 +173,5 @@
 
   </script>
 </footer>
+
 </html>

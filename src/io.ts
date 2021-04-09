@@ -68,7 +68,12 @@ export function io(httpServer: any, games: any) {
         // Send a report to everyone
         socket.to(msg.gameId).emit('event',msg.event) // sends to other players
       })
-  
+      
+      //buzz
+      socket.on('chargeFail', (msg: ClientMessage) => {
+        // Send a report to everyone
+        socket.to(msg.gameId).emit('chargeFail', msg.content) // sends to other players
+      })
   })
 
   return io

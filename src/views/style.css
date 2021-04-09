@@ -46,6 +46,12 @@
       text-align: center;
   }
 
+  .cross {
+    top: 5px;
+    right: 5px;
+    position: absolute;
+  }
+
   .hidden {
       transform : translateY(-100vh);
       transition: all 0.5s;
