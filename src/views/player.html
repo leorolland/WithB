@@ -165,10 +165,12 @@
     })
     // get an event
     socket.on('event', event => {
-      Toastify({
-        text: `${event} happen`,
-        className: "info",
-      }).showToast();
+      if (event.chosenPlayers==null || event.chosenPlayers.includes(nickname)){ //processing the event only if it's involving the current player (we're in the list or there is no list)
+        Toastify({
+          text: `${JSON.stringify(event)} happen`,
+          className: "info",
+        }).showToast();
+      }
     })
 
   </script>

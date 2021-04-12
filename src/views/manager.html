@@ -7,6 +7,11 @@
   <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
   <script src="https://unpkg.com/vue"></script>
   <link rel="stylesheet" href="/style.css">
+
+  <!-- use the latest vue-select release -->
+  <script src="https://unpkg.com/vue-select@latest"></script>
+  <link rel="stylesheet" href="https://unpkg.com/vue-select@latest/dist/vue-select.css">
+
 </head>
 <body>
   <div id="app">
@@ -19,30 +24,31 @@
         <p>Connected players : {{ report.players.length }}</p>
         <div id="graph"></div>
 
-        <!-- Drop down menu for events -->
-        <div id="app">
-          <select v-for="event in events"
-                  v-model="events.selectedOption">
-            <option v-for="option in event.options" :value="option">
-              {{option.name}}
-            </option>
-          </select>    
+          <!-- Base start : choose an event -->
+          <p>Trigger an event</p>
+          <v-select v-model="events.selectedOption" :options="events.options" label="name"/></v-select>
+
+          <!-- After choosing -->
           <div v-if="events.selectedOption">
             <span>Selected : {{events.selectedOption.name}}</span>   
+
+            <!-- If you have to choose players -->
             <div v-if="events.selectedOption.playersToChoose>0">
-              <!-- gotta choose players -->
+              <p>You have to choose {{events.selectedOption.playersToChoose}} players (currently {{events.chosenPlayers.length}})</p>
+              <v-select multiple v-model="events.chosenPlayers" :options="report.players" :reduce="player=>player.name" label="name" ></v-select>
 
-              <p>You have to choose {{events.selectedOption.playersToChoose}} players</p>
-
+              <!-- When you have chosen enough players -->
+              <div v-if="events.selectedOption.playersToChoose==events.chosenPlayers.length">
+                <p>{{events.chosenPlayers}}</p>
+                <p><span class="btn" v-on:click="createEvent(gameId,events.selectedOption,events.chosenPlayers)">Create event</span> </p>
+              </div>
             </div>
+
+            <!-- If all players will play the event-->
             <div v-else>
-              <p><span class="btn" v-on:click="createEvent(gameId,events.selectedOption)">Create event</span> </p>
+              <p><span class="btn" v-on:click="createEvent(gameId,events.selectedOption,null)">Create event</span> </p>
             </div>
           </div>
-  
-        </div>
-
-
       </div>
 
       <!-- Game hasn't started -->
@@ -67,15 +73,19 @@
     // Open socket.io connection and parse URL to get gameId
     const socket = io();
     const [gameId] = window.location.pathname.split('/').slice(-1)
-    const events = [
-      {
+
+    Vue.component('v-select', VueSelect.VueSelect)
+
+    //handling events
+    const events = {
         options:[
           {name:"Treachery/Trust",playersToChoose:2},
           {name:"Mission",playersToChoose:0},
-          {name:"Question",playersToChoose:5}],
-        selectedOption: {name:"",playersToChoose:0}
+          {name:"Question",playersToChoose:5}
+        ],
+        selectedOption: null,
+        chosenPlayers: []
       }
-    ]
 
     // Load a reactive Vue app
     var app = new Vue({
@@ -144,11 +154,14 @@
       return traits
     }
 
-    //When the manager wants to create an event (WIP, just sends it in the air for now)
-    function createEvent(gameId,event) {
+    //When the manager wants to create an event (WIP)
+    function createEvent(gameId,event,chosenPlayers) {
+      events.chosenPlayers = []
+      events.selectedOption = null
       socket.emit("event", {
       gameId: gameId,
-      event: event
+      event: event,
+      chosenPlayers: chosenPlayers
     })
     }
   </script>

@@ -8,7 +8,8 @@ export type ClientMessage = {
 }
 export type ManagerEvent = {
   gameId: string,
-  event: any
+  event: any,
+  chosenPlayers: string[]
 }
 
 function checkExists(games: any, gameId: string, socket: Socket) {
@@ -64,9 +65,9 @@ export function io(httpServer: any, games: any) {
 
      //event
       socket.on('event', (msg: ManagerEvent) => {
-        console.log(`[${msg.gameId}] ${msg.event} happen`)
+        console.log(`[${msg.gameId}] ${JSON.stringify(msg.event)} received, with players : ${msg.chosenPlayers}`)
         // Send a report to everyone
-        socket.to(msg.gameId).emit('event',msg.event) // sends to other players
+        socket.to(msg.gameId).emit('event',msg) // sends to other players
       })
       
       //buzz
