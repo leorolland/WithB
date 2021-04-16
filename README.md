@@ -8,13 +8,17 @@ An *IRL* interactive roleplay game to learn how to cheat on your relatives.
 
 ## Rules
 
-1) Each person is in a relationship with 2 people.
+1) Each player is randomly associated with 2 people who they are in a relationship with.He/she knows who she is with but is the only one to know with like if you were part of a circle where you only know the person on your right and your left.
 
-2) Everyone knows the 2 ones they are in a relationship with like if you were part of a circle where you only know the person on your right and your left.
+2) Each player is also given 5 random personality traits with at least one in commun with both persons he/she is with.
 
 3) You (and your relations) have to guess with whom they are being cheated on with.
 
-4) You have at least 1 common trait with the ones you are in a relationship with.
+4) When you think you figured out who is one of your partners tchetting you on with you can try to take a hint and hit the buzz button. Be careful you only get 3 trials.
+
+5) At any time, the game masters can decide to spice things up by giving you missions or minigames in order to give some people some bonuses or maluses depending on the outcome of the game.
+Those “events” will appear on the website so you need to have an eye on it at all times.
+
 
 ## Example
 
