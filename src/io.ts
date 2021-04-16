@@ -101,6 +101,15 @@ export function io(httpServer: any, games: any) {
         socket.to(msg.gameId).emit('report', game.jsonReport())
         socket.emit('report', game.jsonReport())
       })
+
+      //Mini-game Treachery/Trust handler
+      socket.on('treachTrust', (msg : ClientMessage) => {
+        if (!checkExists(games, msg.gameId, socket)) return
+        const game: Game = games[msg.gameId]
+        game.addToFeed(`You (${msg.emitter}) have voted ${msg.content}`,[msg.emitter])  
+        socket.to(msg.gameId).emit('report', game.jsonReport())
+        socket.emit('report', game.jsonReport())    
+      })
   })
 
   return io

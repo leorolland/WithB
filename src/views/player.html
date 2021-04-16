@@ -42,6 +42,11 @@
             <p>If you both betray each other, you both lose the game.</p>
             <p>If only one of you chooses to betray the other one, he wins the game.</p>
             <p>If you both trust each other, nothing happens.</p>
+            <select v-model="treachOrTrust">
+              <option v-bind:value="treach"> Treachery </option>
+              <option v-bind:value="trust"> Trust </option>
+            </select>
+            <p><span class="btn" v-on:click="treachTrust">Validate your choice</span></p>
           </div>
          </div>
       </div>
@@ -120,7 +125,8 @@
         minutes: 0,
         seconds: 0,
         intervall: null,
-        event: null
+        event: null,
+        treachOrTrust : ""
       },
       mounted() {
         app.interval = setInterval(() => {
@@ -182,6 +188,21 @@
             }
           }
         },
+        treachTrust() {
+          if (app.treachOrTrust!=""){
+            app.isVisible = false
+            Toastify({
+                text: `You voted for ${app.treachOrTrust}`,
+                backgroundColor: "linear-gradient(to right, #87CEFA	, #1E90FF)",
+                duration: 5000,
+              }).showToast();
+              socket.emit("treachTrust", {
+                gameId: gameId,
+                content: app.treachOrTrust,
+                emitter: nickname
+              })
+          }
+        },
         close: () => {
           app.isVisible = false,
           app.mode = ""
@@ -240,6 +261,15 @@
         duration: 5000,
       }).showToast();
     })
+
+    //Mini-game Treachery/Trust handler
+    socket.on('teachTrust', content => {
+      Toastify({
+        text: `You voted for ${content}`,
+        backgroundColor: "linear-gradient(to right, #87CEFA	, #1E90FF)",
+        duration: 5000,
+      }).showToast();
+    })
     // get an event
     socket.on('event', event => {
       if (event.chosenPlayers==null || event.chosenPlayers.includes(nickname)){ //processing the event only if it's involving the current player (we're in the list or there is no list)
@@ -251,6 +281,8 @@
         app.handleEvent(event)
       }
     })
+
+    
 
   </script>
 </footer>
