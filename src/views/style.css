@@ -3,13 +3,14 @@
     padding: 0;
   }
   html {
-    font-family: Verdana, Geneva, Tahoma, sans-serif;
-    background-color: white;
+    font-family: 'Roboto', sans-serif;    
+    background-color: rgb(255, 255, 255);
   }
   body {
     max-width: 600px;
     margin-left: auto;
     margin-right: auto;
+
     background-color: rgb(255,207, 235);
     padding: 20px;
   }
@@ -23,6 +24,9 @@
     border-radius: 3px;
     cursor: pointer;
   }
+  .btn-showhide {
+    font-size: 0.7em;
+  }
   input {
     padding: 5px; 
     border: none;
@@ -33,19 +37,57 @@
     z-index: 1;
     top: 10%;
     left: 50%;
-    margin-left: auto;
-    margin-right: auto;
     transition: all 0.5s;
   }
   .subclass{
-      background-color: #f5bcd7 ;
-      position: relative;
-      left : -50%;
-      height : 80vh;
-      width: 80vw;
+    background-color: #f5bcd7;
+    position: relative;
+    padding: 15px 10px 15px 10px;
+    left: -50%;
+    /* height: 80vh; */
+    width: 88vw;
+    max-width: 450px;
+    text-align: center;
+    box-shadow: 1px 1px 30px 0px #0000008f;
+  }
+
+  .cross {
+    top: 5px;
+    right: 5px;
+    position: absolute;
   }
 
   .hidden {
-      transform : translateY(100vh);
+      transform : translateY(-100vh);
       transition: all 0.5s;
+  }
+
+  #graph {
+    height: 400px;
+  }
+
+  p {
+    margin-top: 3px;
+  }
+
+  hr {
+    margin-top: 20px;
+    margin-bottom: 20px;
+    border: 0;
+    height: 1px;
+    background-image: linear-gradient(to right, rgba(32, 32, 32, 0), rgba(88, 88, 88, 0.75), rgba(34, 34, 34, 0));
+  }
+
+  .message {
+    display: inline-block;
+    padding: 8px;
+    margin: 5px;
+    border-radius: 10px;
+    background-color: rgb(207, 207, 207);
+  }
+
+  .date {
+    margin-left: 10px;
+    color: rgb(100, 100, 100);
+    font-size: 0.7em;
   }

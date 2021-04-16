@@ -1,33 +1,75 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>With B - Play</title>
   <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet">
   <script src="https://unpkg.com/vue"></script>
   <link rel="stylesheet" href="/style.css">
 </head>
+
 <body>
   <div id="app">
     <div v-if="!report">Loading ...</div>
     <div v-else>
-      <h1>Game {{ gameId }}</h1>
+      <h4>Game {{ gameId }}</h4>
       <div class="modal" v-bind:class="{ hidden: !isVisible}">
         <div class="subclass">
-          Test
-        </div> 
+          <div class="cross btn" v-on:click="close">x</div>
+          <div v-if="mode=='buzz'">
+            <h2>You want to charge 2 players</h2>
+            <p> Who do you want to charge ? </p>
+            <p>Your Mate</p>
+            <select v-model="selectedMate">
+              <option v-bind:value="me.previous"> {{ me.previous }}</option>
+              <option v-bind:value="me.next"> {{ me.next }}</option>
+
+            </select>
+            <p>The player they are cheating on you with</p>
+            <select v-model="selectedOther">
+              <option v-for="player in others" v-bind:value="player.name"> {{ player.name }}</option>
+            </select>
+            <p><span class="btn" v-on:click="charge">Charge (buzzes left : {{counterBuzz }})</span></p>
+          </div>
+        </div>
       </div>
       <!-- Game has started -->
       <div v-if="report.started">
+        <p>Time until the end : {{minutes}}m {{ seconds}}s </p>
         <p>Connected players : {{ report.players.length }}</p>
-        <h2>My traits :</h2>
-        <ul>
-          <li v-for="trait in me.traits">{{ trait }}</li>
-        </ul>
-        <h2>Relationships :</h2>
-        I am in a relationship with {{ me.previous }} but he/she 
-        doesn't know I'm cheating on him/her with {{ me.next }}
+        <h2>
+          <span class="btn btn-showhide" v-on:click="showTraits = !showTraits">
+            {{ showTraits ? '🤫' : '👀' }}
+          </span>
+          My traits
+        </h2>
+        <div v-if="showTraits">
+          <ul>
+            <li v-for="trait in me.traits">{{ trait }}</li>
+          </ul>
+        </div>
+        <h2>
+          <span class="btn btn-showhide" v-on:click="showRelations = !showRelations">
+            {{ showRelations ? '🤫' : '👀' }}
+          </span>
+          Relationships
+        </h2>
+        <div v-if="showRelations">
+          <p>I am in a relationship with <b>{{ me.previous }}</b> and <b>{{ me.next }}</b>.</p>
+          <p>They doesn't know each other and should never know !!</p>
+        </div>
+        <hr>
+        <p><span class="btn" v-on:click="buzz">🔥 Charge someone</span></p>
+        <hr>
+        <h2>Feed</h2>
+        <div v-for="msg in report.feed">
+          <div class="date">{{ stringToTime(msg.date) }}</div>
+          <span class="message">{{ msg.content }}</span><br>
+        </div>
       </div>
 
       <!-- Game hasn't started -->
@@ -60,12 +102,76 @@
       data: {
         gameId: gameId,
         report: null,
-        isVisible : false,
+        isVisible: false,
+        mode: "",
+        selectedMate: "",
+        selectedOther: "",
+        counterBuzz: 3,
+        showRelations: false,
+        showTraits: false,
+        minutes: 0,
+        seconds: 0,
+        intervall: null
+      },
+      mounted() {
+        app.interval = setInterval(() => {
+          app.updateDiffs();
+        }, 1000);
+
+        app.updateDiffs();
+      },
+      destroyed() {
+        clearInterval(app.interval);
       },
       computed: {
-        me: () => app.report.players.find(p=>p.name==nickname)
+        me: () => app.report.players.find(p => p.name == nickname),
+        others: () => app.report.players.filter(p => (p.name != app.me.previous) && (p.name != app.me.next) && (p.name != nickname))
+      },
+      methods: {
+        buzz: () => {
+          if (app.counterBuzz > 0) {
+            app.isVisible = true
+            app.mode = "buzz"
+          }
+        },
+        charge: () => {
+          app.isVisible = false
+          assumption = verifyAssumption(app.selectedMate, app.selectedOther)
+          if (!assumption) {
+            socket.emit("chargeFail", {
+              gameId: gameId,
+              content: [app.selectedMate, app.selectedOther]
+            })
+            Toastify({
+              text: `${app.selectedMate} and ${app.selectedOther} aren't in a relationship`,
+              className: "error",
+              backgroundColor: "linear-gradient(to right, #FF0000, #8B0000)",
+              duration: 5000,
+            }).showToast();
+            app.counterBuzz--;
+          }
+          //TODO : see what to do when assumption = true
+        },
+        close: () => {
+          app.isVisible = false
+        },
+        stringToTime: (date) => {
+          const d = new Date(date)
+          return `${d.getHours()}:${d.getMinutes()}`
+        },
+        updateDiffs() {
+          //lets figure out our diffs
+          let diff = Math.abs(new Date(app.report.endedAt) - Date.now());
+          app.minutes = Math.floor(diff / 60000);
+          app.seconds = (Math.floor(diff / 1000) % 60);
+        }
       }
     })
+
+    function verifyAssumption(mate, other) {
+      mate = app.report.players.find(p => p.name == mate)
+      return mate.previous == other || mate.next == other
+    }
 
     // Notify the server that we are part of a specific game
     socket.emit('joinRoom', gameId);
@@ -78,14 +184,14 @@
       }).showToast();
       socket.emit('getReport', gameId)
     })
-    
+
     // When server sends a fresh report, update the Vue app
-    socket.on('report', report => app.report=JSON.parse(report))
+    socket.on('report', report => app.report = JSON.parse(report))
     socket.on('report', report => console.log(JSON.parse(report)))
 
     // Errors handling
-    socket.on('doesnt exists', ()=>alert("Game doesn't longer exist :("))
-    socket.on('already taken', ()=>alert("Nickname already taken :("))
+    socket.on('doesnt exists', () => alert("Game doesn't longer exist :("))
+    socket.on('already taken', () => alert("Nickname already taken :("))
 
     // Ask the server to send a full game report
     socket.emit("hello", {
@@ -94,6 +200,26 @@
     })
     socket.emit('getReport', gameId)
 
+    //Buzz handling
+    socket.on('chargeFail', content => {
+      Toastify({
+        text: `${content[0]} and ${content[1]} aren't in a relationship`,
+        className: "error",
+        backgroundColor: "linear-gradient(to right, #FF0000, #8B0000)",
+        duration: 5000,
+      }).showToast();
+    })
+    // get an event
+    socket.on('event', event => {
+      if (event.chosenPlayers==null || event.chosenPlayers.includes(nickname)){ //processing the event only if it's involving the current player (we're in the list or there is no list)
+        Toastify({
+          text: `${JSON.stringify(event)} happen`,
+          className: "info",
+        }).showToast();
+      }
+    })
+
   </script>
 </footer>
+
 </html>

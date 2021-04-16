@@ -26,7 +26,10 @@ async function newTab(browser, url) {
 }
 
 // Open a headless browser 
-puppeteer.launch({headless: true}).then(browser => {
+
+//puppeteer.launch({headless: true}).then(browser => {
+puppeteer.launch({ headless: false, defaultViewport: null }).then(browser => {
+
 
     // Create a game
     get('/create', async res => {

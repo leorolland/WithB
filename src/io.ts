@@ -6,6 +6,11 @@ export type ClientMessage = {
   gameId: string,
   content: any
 }
+export type ManagerEvent = {
+  gameId: string,
+  event: any,
+  chosenPlayers: string[]
+}
 
 function checkExists(games: any, gameId: string, socket: Socket) {
   if (!(Object.keys(games).includes(gameId))) {
@@ -58,6 +63,23 @@ export function io(httpServer: any, games: any) {
       socket.emit('report', game.jsonReport()) // sends to the manager
     })
 
+     //event
+      socket.on('event', (msg: ManagerEvent) => {
+        console.log(`[${msg.gameId}] ${JSON.stringify(msg.event)} received, with players : ${msg.chosenPlayers}`)
+        // Send a report to everyone
+        socket.to(msg.gameId).emit('event',msg) // sends to other players
+      })
+      
+      //buzz
+      socket.on('chargeFail', (msg: ClientMessage) => {
+        // Get the corresponding game if it exists, else leave
+        if (!checkExists(games, msg.gameId, socket)) return
+        const game: Game = games[msg.gameId]
+        game.addToFeed(`${msg.content[0]} is not in a relationship with ${msg.content[1]}`)
+        socket.to(msg.gameId).emit('report', game.jsonReport())
+        socket.emit('report', game.jsonReport())
+        socket.to(msg.gameId).emit('chargeFail', msg.content) // sends to other players
+      })
   })
 
   return io
