@@ -10,7 +10,7 @@
     max-width: 600px;
     margin-left: auto;
     margin-right: auto;
-    background-color: lightgrey;
+    background-color: rgb(255,207, 235);
     padding: 20px;
   }
   h1, h2, h3, p {
@@ -18,7 +18,7 @@
   }
   .btn {
     display: inline-block;
-    background-color: rgb(166, 166, 194);
+    background-color: rgb(225,123,185);
     padding: 5px;
     border-radius: 3px;
     cursor: pointer;

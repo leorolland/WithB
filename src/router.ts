@@ -36,4 +36,8 @@ router.get('/:gameId/:nickname', (req: Request, res: Response) => {
   res.sendFile(__dirname + '/views/player.html');
 })
 
+//Recup image
+router.get('/logo', (req: Request, res: Response) => {
+  res.sendFile(__dirname + '/views/logo.png')} )
+
 module.exports = router
