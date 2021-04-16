@@ -48,6 +48,15 @@
             </select>
             <p><span class="btn" v-on:click="treachTrust">Validate your choice</span></p>
           </div>
+
+          <div v-if="mode=='mission'">
+            <h1>Mission</h1>
+            <p>You got a mission !</p>
+            <p>If you succeed in the allotted time, you will earn a bonus</p>
+            <p>Your mission : make one of your mate charge you</p>
+            <p>Allotted time : 5 min</p>
+          </div>
+
          </div>
       </div>
       <!-- Game has started -->
