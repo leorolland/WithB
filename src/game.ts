@@ -3,6 +3,7 @@ import { createCircle, Person } from "./generator";
 type Message = {
   date: Date
   content: string
+  receivers?: string[]
 }
 
 export class Game {
@@ -37,10 +38,11 @@ export class Game {
     return [...this.lobby, ...this.players].includes(name)
   }
 
-  addToFeed(msg: string) {
+  addToFeed(msg: string, receivers?: string[]) {
     this.feed.push({
       content: msg,
-      date: new Date()
+      date: new Date(),
+      receivers
     })
   }
 

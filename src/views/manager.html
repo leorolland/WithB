@@ -169,7 +169,7 @@
         return {
           from: player.name,
           to: player.next,
-          label: commonTraits(player, app.report.players.find(p => p.name == player.next)).join(", ")
+          label: commonTraits(player, app.report.players.find(p => p.name == player.next)).join(",\n")
         }
       })
       let container = document.getElementById('graph')
@@ -193,6 +193,7 @@
 
     //When the manager wants to create an event (WIP)
     function createEvent(gameId, event, chosenPlayers) {
+      console.log(event)
       events.chosenPlayers = []
       events.selectedOption = null
       socket.emit("event", {

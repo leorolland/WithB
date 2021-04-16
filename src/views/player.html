@@ -35,6 +35,15 @@
             </select>
             <p><span class="btn" v-on:click="charge">Charge (buzzes left : {{counterBuzz }})</span></p>
           </div>
+
+          <div v-if="mode=='treachery'">
+            
+          </div>
+          <div v-if="mode=='mission'">
+            
+          </div>
+
+
         </div>
       </div>
       <!-- Game has started -->
@@ -66,7 +75,7 @@
         <p><span class="btn" v-on:click="buzz">🔥 Charge someone</span></p>
         <hr>
         <h2>Feed</h2>
-        <div v-for="msg in report.feed">
+        <div v-for="msg in report.feed" v-if="!msg.receivers || msg.receivers.includes(me.name)">
           <div class="date">{{ stringToTime(msg.date) }}</div>
           <span class="message">{{ msg.content }}</span><br>
         </div>
@@ -111,7 +120,7 @@
         showTraits: false,
         minutes: 0,
         seconds: 0,
-        intervall: null
+        intervall: null,
       },
       mounted() {
         app.interval = setInterval(() => {

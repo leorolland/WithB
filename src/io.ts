@@ -1,4 +1,5 @@
 import { maxHeaderSize } from "http";
+import { MessageChannel } from "node:worker_threads";
 import { Server, Socket } from "socket.io";
 import { Game } from "./game";
 
@@ -66,6 +67,14 @@ export function io(httpServer: any, games: any) {
      //event
       socket.on('event', (msg: ManagerEvent) => {
         console.log(`[${msg.gameId}] ${JSON.stringify(msg.event)} received, with players : ${msg.chosenPlayers}`)
+        
+        
+         // Get the corresponding game if it exists, else leave
+        if (!checkExists(games, msg.gameId, socket)) return
+        const game: Game = games[msg.gameId]
+        game.addToFeed(`You received an event : ${msg.event.name} with ${msg.chosenPlayers?msg.chosenPlayers:"everyone"}`, msg.chosenPlayers)
+        socket.to(msg.gameId).emit('report', game.jsonReport())
+
         // Send a report to everyone
         socket.to(msg.gameId).emit('event',msg) // sends to other players
       })
