@@ -72,7 +72,12 @@ export function io(httpServer: any, games: any) {
       
       //buzz
       socket.on('chargeFail', (msg: ClientMessage) => {
-        // Send a report to everyone
+        // Get the corresponding game if it exists, else leave
+        if (!checkExists(games, msg.gameId, socket)) return
+        const game: Game = games[msg.gameId]
+        game.addToFeed(`${msg.content[0]} is not in a relationship with ${msg.content[1]}`)
+        socket.to(msg.gameId).emit('report', game.jsonReport())
+        socket.emit('report', game.jsonReport())
         socket.to(msg.gameId).emit('chargeFail', msg.content) // sends to other players
       })
   })

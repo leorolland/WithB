@@ -6,6 +6,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>With B - Play</title>
   <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet">
   <script src="https://unpkg.com/vue"></script>
   <link rel="stylesheet" href="/style.css">
 </head>
@@ -14,7 +16,7 @@
   <div id="app">
     <div v-if="!report">Loading ...</div>
     <div v-else>
-      <h1>Game {{ gameId }}</h1>
+      <h4>Game {{ gameId }}</h4>
       <div class="modal" v-bind:class="{ hidden: !isVisible}">
         <div class="subclass">
           <div class="cross btn" v-on:click="close">x</div>
@@ -38,14 +40,35 @@
       <!-- Game has started -->
       <div v-if="report.started">
         <p>Connected players : {{ report.players.length }}</p>
-        <h2>My traits :</h2>
-        <ul>
-          <li v-for="trait in me.traits">{{ trait }}</li>
-        </ul>
-        <h2>Relationships :</h2>
-        I am in a relationship with {{ me.previous }} but he/she
-        doesn't know I'm cheating on him/her with {{ me.next }}
-        <p><span class="btn" v-on:click="buzz">Charge someone</span></p>
+        <h2>
+          <span class="btn btn-showhide" v-on:click="showTraits = !showTraits">
+            {{ showTraits ? '🤫' : '👀' }}
+          </span>
+          My traits
+        </h2>
+        <div v-if="showTraits">
+          <ul>
+            <li v-for="trait in me.traits">{{ trait }}</li>
+          </ul>
+        </div>
+        <h2>
+          <span class="btn btn-showhide" v-on:click="showRelations = !showRelations">
+            {{ showRelations ? '🤫' : '👀' }}
+          </span>
+          Relationships
+        </h2>
+        <div v-if="showRelations">
+          <p>I am in a relationship with <b>{{ me.previous }}</b> and <b>{{ me.next }}</b>.</p>
+          <p>They doesn't know each other and should never know !!</p>
+        </div>
+        <hr>
+        <p><span class="btn" v-on:click="buzz">🔥 Charge someone</span></p>
+        <hr>
+        <h2>Feed</h2>
+        <div v-for="msg in report.feed">
+          <div class="date">{{ stringToTime(msg.date) }}</div>
+          <span class="message">{{ msg.content }}</span><br>
+        </div>
       </div>
 
       <!-- Game hasn't started -->
@@ -82,7 +105,9 @@
         mode: "",
         selectedMate: "",
         selectedOther: "",
-        counterBuzz: 3
+        counterBuzz: 3,
+        showRelations: false,
+        showTraits: false
       },
       computed: {
         me: () => app.report.players.find(p => p.name == nickname),
@@ -95,7 +120,6 @@
             app.mode = "buzz"
           }
         },
-
         charge: () => {
           app.isVisible = false
           assumption = verifyAssumption(app.selectedMate, app.selectedOther)
@@ -113,11 +137,13 @@
             app.counterBuzz--;
           }
           //TODO : see what to do when assumption = true
-
         },
-
         close: () => {
           app.isVisible = false
+        },
+        stringToTime: (date) => {
+          const d = new Date(date)
+          return `${d.getHours()}:${d.getMinutes()}`
         }
       }
     })

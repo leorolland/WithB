@@ -1,5 +1,10 @@
 import { createCircle, Person } from "./generator";
 
+type Message = {
+  date: Date
+  content: string
+}
+
 export class Game {
 
   id: string
@@ -9,6 +14,7 @@ export class Game {
   players: Person[]
   createdAt: Date
   started: boolean
+  feed: Message[]
 
   constructor() {
     this.id = Math.random().toString(36).substring(2, 8).toUpperCase()
@@ -16,6 +22,7 @@ export class Game {
     this.players = []
     this.createdAt = new Date()
     this.started = false
+    this.feed = []
   }
 
   addToLobby(nickname: string) {
@@ -28,6 +35,13 @@ export class Game {
 
   isNicknameTaken(name: string) {
     return [...this.lobby, ...this.players].includes(name)
+  }
+
+  addToFeed(msg: string) {
+    this.feed.push({
+      content: msg,
+      date: new Date()
+    })
   }
 
   start() {
