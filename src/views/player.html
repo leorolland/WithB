@@ -37,14 +37,13 @@
           </div>
 
           <div v-if="mode=='treachery'">
-            
+            <h1>Treachery/Trust</h1>
+            <!--<p>{{event.chosenPlayers}} have to play together ! You have to choose between betraying and trusting the other one.</p>-->
+            <p>If you both betray each other, you both lose the game.</p>
+            <p>If only one of you chooses to betray the other one, he wins the game.</p>
+            <p>If you both trust each other, nothing happens.</p>
           </div>
-          <div v-if="mode=='mission'">
-            
-          </div>
-
-
-        </div>
+         </div>
       </div>
       <!-- Game has started -->
       <div v-if="report.started">
@@ -121,6 +120,7 @@
         minutes: 0,
         seconds: 0,
         intervall: null,
+        event: null
       },
       mounted() {
         app.interval = setInterval(() => {
@@ -141,6 +141,15 @@
           if (app.counterBuzz > 0) {
             app.isVisible = true
             app.mode = "buzz"
+          }
+        },
+        handleEvent: (event) => {
+          app.isVisible = true
+          app.event = event
+          if (event.event.name=="Treachery/Trust"){
+            app.mode = "treachery"
+          } else if (event.event.name=="Mission"){
+            app.mode="mission"
           }
         },
         charge: () => {
@@ -174,7 +183,8 @@
           }
         },
         close: () => {
-          app.isVisible = false
+          app.isVisible = false,
+          app.mode = ""
         },
         stringToTime: (date) => {
           const d = new Date(date)
@@ -233,10 +243,12 @@
     // get an event
     socket.on('event', event => {
       if (event.chosenPlayers==null || event.chosenPlayers.includes(nickname)){ //processing the event only if it's involving the current player (we're in the list or there is no list)
-        Toastify({
+        /*Toastify({
           text: `${JSON.stringify(event)} happen`,
           className: "info",
-        }).showToast();
+        }).showToast();*/
+        console.log(event)
+        app.handleEvent(event)
       }
     })
 
