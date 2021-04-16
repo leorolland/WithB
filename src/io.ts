@@ -5,7 +5,8 @@ import { Game } from "./game";
 
 export type ClientMessage = {
   gameId: string,
-  content: any
+  content: any,
+  emitter: string
 }
 export type ManagerEvent = {
   gameId: string,
@@ -88,6 +89,19 @@ export function io(httpServer: any, games: any) {
         socket.to(msg.gameId).emit('report', game.jsonReport())
         socket.emit('report', game.jsonReport())
         socket.to(msg.gameId).emit('chargeFail', msg.content) // sends to other players
+      })
+
+      socket.on('chargeSucceed', (msg: ClientMessage) => {
+        //TODO add score counter if people found the right link
+
+        // Get the corresponding game if it exists, else leave
+        if (!checkExists(games, msg.gameId, socket)) return
+        const game: Game = games[msg.gameId]
+        game.addToFeed(`Someone found that ${msg.content[0]} and ${msg.content[1]} are in a relationship`,[msg.content[0],msg.content[1]])
+        game.addToFeed(`You found that ${msg.content[0]} is cheating on you with ${msg.content[1]}`,[msg.emitter])
+        socket.to(msg.gameId).emit('report', game.jsonReport())
+        socket.emit('report', game.jsonReport())
+        //socket.to(msg.gameId).emit('chargeFail', msg.content) // sends to other players
       })
   })
 

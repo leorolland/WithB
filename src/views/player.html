@@ -144,22 +144,34 @@
           }
         },
         charge: () => {
-          app.isVisible = false
-          assumption = verifyAssumption(app.selectedMate, app.selectedOther)
-          if (!assumption) {
-            socket.emit("chargeFail", {
-              gameId: gameId,
-              content: [app.selectedMate, app.selectedOther]
-            })
-            Toastify({
-              text: `${app.selectedMate} and ${app.selectedOther} aren't in a relationship`,
-              className: "error",
-              backgroundColor: "linear-gradient(to right, #FF0000, #8B0000)",
-              duration: 5000,
-            }).showToast();
-            app.counterBuzz--;
+          if (app.selectedMate!="" && app.selectedOther!=""){
+            app.isVisible = false
+            assumption = verifyAssumption(app.selectedMate, app.selectedOther)
+            if (!assumption) {
+              socket.emit("chargeFail", {
+                gameId: gameId,
+                content: [app.selectedMate, app.selectedOther]
+              })
+              Toastify({
+                text: `${app.selectedMate} and ${app.selectedOther} aren't in a relationship`,
+                className: "error",
+                backgroundColor: "linear-gradient(to right, #FF0000, #8B0000)",
+                duration: 5000,
+              }).showToast();
+              app.counterBuzz--;
+            } else {
+              socket.emit("chargeSucceed", {
+                gameId: gameId,
+                content: [app.selectedMate, app.selectedOther],
+                emitter: nickname
+              })
+              Toastify({
+                text: `Well done ! ${app.selectedMate} and ${app.selectedOther} are in a relationship`,
+                backgroundColor: "linear-gradient(to right, #00FF00, #008000)",
+                duration: 5000,
+              }).showToast();
+            }
           }
-          //TODO : see what to do when assumption = true
         },
         close: () => {
           app.isVisible = false
