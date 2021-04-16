@@ -39,6 +39,7 @@
       </div>
       <!-- Game has started -->
       <div v-if="report.started">
+        <p>Time until the end : {{minutes}}m {{ seconds}}s </p>
         <p>Connected players : {{ report.players.length }}</p>
         <h2>
           <span class="btn btn-showhide" v-on:click="showTraits = !showTraits">
@@ -107,7 +108,20 @@
         selectedOther: "",
         counterBuzz: 3,
         showRelations: false,
-        showTraits: false
+        showTraits: false,
+        minutes: 0,
+        seconds: 0,
+        intervall: null
+      },
+      mounted() {
+        app.interval = setInterval(() => {
+          app.updateDiffs();
+        }, 1000);
+
+        app.updateDiffs();
+      },
+      destroyed() {
+        clearInterval(app.interval);
       },
       computed: {
         me: () => app.report.players.find(p => p.name == nickname),
@@ -144,6 +158,12 @@
         stringToTime: (date) => {
           const d = new Date(date)
           return `${d.getHours()}:${d.getMinutes()}`
+        },
+        updateDiffs() {
+          //lets figure out our diffs
+          let diff = Math.abs(new Date(app.report.endedAt) - Date.now());
+          app.minutes = Math.floor(diff / 60000);
+          app.seconds = (Math.floor(diff / 1000) % 60);
         }
       }
     })
