@@ -52,14 +52,14 @@ export function io(httpServer: any, games: any) {
     })
 
     // WIP
-    socket.on('startGame', gameId => {
+    socket.on('startGame', content => {
       // Get the corresponding game if it exists, else leave
-      if (!checkExists(games, gameId, socket)) return
-      const game: Game = games[gameId]
+      if (!checkExists(games, content.gameId, socket)) return
+      const game: Game = games[content.gameId]
       // Start game
-      game.start()
+      game.start(content.time)
       // Send a report to everyone
-      socket.to(gameId).emit('report', game.jsonReport()) // sends to other players
+      socket.to(content.gameId).emit('report', game.jsonReport()) // sends to other players
       socket.emit('report', game.jsonReport()) // sends to the manager
     })
 

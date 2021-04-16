@@ -67,7 +67,11 @@
             {{ player }}
           </li>
         </ul>
-        <p>Is everyone here ? <span class="btn" v-on:click="start">Start game</span> </p>
+        <p>Is everyone here ? 
+          <br>How long do you want your game to last ?
+          <input type= "number" v-model="duration">
+          minutes
+          <span class="btn" v-on:click="start">Start game</span> </p>
       </div>
 
     </div>
@@ -104,7 +108,8 @@
         events,
         minutes: 0,
         seconds: 0,
-        intervall: null
+        intervall: null,
+        duration: 15
       },
       mounted() {
         app.interval = setInterval(() => {
@@ -118,7 +123,10 @@
       },
       methods: {
         start: function (event) {
-          if (app.report.lobby.length > 4) socket.emit('startGame', gameId)
+          const content = {
+            gameId: gameId, time: app.duration
+          }
+          if (app.report.lobby.length > 4) socket.emit('startGame', content)
         },
         createEvent,
         updateDiffs() {

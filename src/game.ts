@@ -1,6 +1,4 @@
 import { createCircle, Person } from "./generator";
-//choose the length of the game
-var minutesToAdd=15;
 
 type Message = {
   date: Date
@@ -22,7 +20,7 @@ export class Game {
     this.id = Math.random().toString(36).substring(2, 8).toUpperCase()
     this.lobby = []
     this.players = []
-    this.endedAt = new Date(new Date().getTime() + minutesToAdd*60000);
+    this.endedAt= new Date();
     this.started = false
     this.feed = []
   }
@@ -46,9 +44,10 @@ export class Game {
     })
   }
 
-  start() {
+  start(time:number) {
     this.players = createCircle(this.lobby)
     this.lobby = []
+    this.endedAt = new Date(new Date().getTime() + time*60000);
     this.started = true
   }
 
