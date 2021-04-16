@@ -38,13 +38,13 @@
 
           <div v-if="mode=='treachery'">
             <h1>Treachery/Trust</h1>
-            <!--<p>{{event.chosenPlayers}} have to play together ! You have to choose between betraying and trusting the other one.</p>-->
+            <p>{{event.chosenPlayers}} have to play together ! You have to choose between betraying and trusting the other one.</p>
             <p>If you both betray each other, you both lose the game.</p>
             <p>If only one of you chooses to betray the other one, he wins the game.</p>
             <p>If you both trust each other, nothing happens.</p>
             <select v-model="treachOrTrust">
-              <option v-bind:value="treach"> Treachery </option>
-              <option v-bind:value="trust"> Trust </option>
+              <option> Treachery </option>
+              <option> Trust </option>
             </select>
             <p><span class="btn" v-on:click="treachTrust">Validate your choice</span></p>
           </div>
@@ -109,6 +109,7 @@
     nickname = decodeURI(nickname)
     console.log(gameId, nickname)
 
+   
     // Load a reactive Vue app
     var app = new Vue({
       el: '#app',
@@ -188,19 +189,21 @@
             }
           }
         },
-        treachTrust() {
+        treachTrust:() => {
           if (app.treachOrTrust!=""){
+            console.log(app.treachOrTrust)
             app.isVisible = false
+            socket.emit("treachTrust", {
+                gameId: gameId,
+                content: app.treachOrTrust,
+                emitter: nickname
+              })
             Toastify({
                 text: `You voted for ${app.treachOrTrust}`,
                 backgroundColor: "linear-gradient(to right, #87CEFA	, #1E90FF)",
                 duration: 5000,
               }).showToast();
-              socket.emit("treachTrust", {
-                gameId: gameId,
-                content: app.treachOrTrust,
-                emitter: nickname
-              })
+              
           }
         },
         close: () => {
