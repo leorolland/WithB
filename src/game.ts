@@ -1,4 +1,6 @@
 import { createCircle, Person } from "./generator";
+//choose the length of the game
+var minutesToAdd=15;
 
 export class Game {
 
@@ -7,14 +9,14 @@ export class Game {
   lobby: string[]
   // When the game starts, players in the lobby are converted to players
   players: Person[]
-  createdAt: Date
+  endedAt: Date
   started: boolean
 
   constructor() {
     this.id = Math.random().toString(36).substring(2, 8).toUpperCase()
     this.lobby = []
     this.players = []
-    this.createdAt = new Date()
+    this.endedAt = new Date(new Date().getTime() + minutesToAdd*60000);
     this.started = false
   }
 

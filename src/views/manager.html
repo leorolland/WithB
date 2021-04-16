@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -13,6 +14,7 @@
   <link rel="stylesheet" href="https://unpkg.com/vue-select@latest/dist/vue-select.css">
 
 </head>
+
 <body>
   <div id="app">
     <div v-if="!report">Loading ...</div>
@@ -21,34 +23,39 @@
 
       <!-- Game has started -->
       <div v-if="report.started">
+        <p>Time until the end : {{minutes}}m {{ seconds}}s </p>
         <p>Connected players : {{ report.players.length }}</p>
         <div id="graph"></div>
 
-          <!-- Base start : choose an event -->
-          <p>Trigger an event</p>
-          <v-select v-model="events.selectedOption" :options="events.options" label="name"/></v-select>
+        <!-- Base start : choose an event -->
+        <p>Trigger an event</p>
+        <v-select v-model="events.selectedOption" :options="events.options" label="name" />
+        </v-select>
 
-          <!-- After choosing -->
-          <div v-if="events.selectedOption">
-            <span>Selected : {{events.selectedOption.name}}</span>   
+        <!-- After choosing -->
+        <div v-if="events.selectedOption">
+          <span>Selected : {{events.selectedOption.name}}</span>
 
-            <!-- If you have to choose players -->
-            <div v-if="events.selectedOption.playersToChoose>0">
-              <p>You have to choose {{events.selectedOption.playersToChoose}} players (currently {{events.chosenPlayers.length}})</p>
-              <v-select multiple v-model="events.chosenPlayers" :options="report.players" :reduce="player=>player.name" label="name" ></v-select>
+          <!-- If you have to choose players -->
+          <div v-if="events.selectedOption.playersToChoose>0">
+            <p>You have to choose {{events.selectedOption.playersToChoose}} players (currently
+              {{events.chosenPlayers.length}})</p>
+            <v-select multiple v-model="events.chosenPlayers" :options="report.players" :reduce="player=>player.name"
+              label="name"></v-select>
 
-              <!-- When you have chosen enough players -->
-              <div v-if="events.selectedOption.playersToChoose==events.chosenPlayers.length">
-                <p>{{events.chosenPlayers}}</p>
-                <p><span class="btn" v-on:click="createEvent(gameId,events.selectedOption,events.chosenPlayers)">Create event</span> </p>
-              </div>
-            </div>
-
-            <!-- If all players will play the event-->
-            <div v-else>
-              <p><span class="btn" v-on:click="createEvent(gameId,events.selectedOption,null)">Create event</span> </p>
+            <!-- When you have chosen enough players -->
+            <div v-if="events.selectedOption.playersToChoose==events.chosenPlayers.length">
+              <p>{{events.chosenPlayers}}</p>
+              <p><span class="btn" v-on:click="createEvent(gameId,events.selectedOption,events.chosenPlayers)">Create
+                  event</span> </p>
             </div>
           </div>
+
+          <!-- If all players will play the event-->
+          <div v-else>
+            <p><span class="btn" v-on:click="createEvent(gameId,events.selectedOption,null)">Create event</span> </p>
+          </div>
+        </div>
       </div>
 
       <!-- Game hasn't started -->
@@ -61,7 +68,7 @@
         </ul>
         <p>Is everyone here ? <span class="btn" v-on:click="start">Start game</span> </p>
       </div>
-      
+
     </div>
   </div>
 </body>
@@ -78,14 +85,14 @@
 
     //handling events
     const events = {
-        options:[
-          {name:"Treachery/Trust",playersToChoose:2},
-          {name:"Mission",playersToChoose:0},
-          {name:"Question",playersToChoose:5}
-        ],
-        selectedOption: null,
-        chosenPlayers: []
-      }
+      options: [
+        { name: "Treachery/Trust", playersToChoose: 2 },
+        { name: "Mission", playersToChoose: 0 },
+        { name: "Question", playersToChoose: 5 }
+      ],
+      selectedOption: null,
+      chosenPlayers: []
+    }
 
     // Load a reactive Vue app
     var app = new Vue({
@@ -93,19 +100,38 @@
       data: {
         gameId: gameId,
         report: null,
-        events
+        events,
+        minutes: 0,
+        seconds: 0,
+        intervall: null
+      },
+      mounted() {
+        app.interval = setInterval(() => {
+          app.updateDiffs();
+        }, 1000);
+
+        app.updateDiffs();
+      },
+      destroyed() {
+        clearInterval(app.interval);
       },
       methods: {
-        start: function(event) {
+        start: function (event) {
           if (app.report.lobby.length > 4) socket.emit('startGame', gameId)
         },
-        createEvent
+        createEvent,
+        updateDiffs() {
+          //lets figure out our diffs
+          let diff = Math.abs(new Date(app.report.endedAt) - Date.now());
+          app.minutes = Math.floor(diff / 60000);
+          app.seconds = (Math.floor(diff / 1000) % 60);
+        }
       }
     })
 
     // Notify the server that we are part of a specific game
     socket.emit('joinRoom', gameId);
-    
+
     // When someone sends 'hello' ask for a new report
     socket.on('hello', nickname => {
       Toastify({
@@ -117,24 +143,26 @@
 
     // When server sends a fresh report, update the Vue app
     socket.on('report', report => {
-      app.report=JSON.parse(report)
-      if (app.report.started) setTimeout(()=>updateGraph(), 500)
+      app.report = JSON.parse(report)
+      if (app.report.started) setTimeout(() => updateGraph(), 500)
     })
     socket.on('report', report => console.log(JSON.parse(report)))
 
     // Errors handling
-    socket.on('doesnt exists', ()=>alert("Game doesn't longer exist :("))
+    socket.on('doesnt exists', () => alert("Game doesn't longer exist :("))
 
     // Ask the server to send a full game report
     socket.emit('getReport', gameId)
 
     function updateGraph() {
       let players = app.report.players.map(player => { return { id: player.name, label: player.name } })
-      let links = app.report.players.map(player => { return { 
-        from: player.name,
-        to: player.next,
-        label: commonTraits(player, app.report.players.find(p=>p.name==player.next)).join(", ") 
-      } })
+      let links = app.report.players.map(player => {
+        return {
+          from: player.name,
+          to: player.next,
+          label: commonTraits(player, app.report.players.find(p => p.name == player.next)).join(", ")
+        }
+      })
       let container = document.getElementById('graph')
       let data = {
         nodes: new vis.DataSet(players),
@@ -142,7 +170,7 @@
       }
       let network = new vis.Network(container, data, {})
     }
-    
+
     function commonTraits(p1, p2) {
       console.log(p1, p2)
       traits = []
@@ -155,15 +183,16 @@
     }
 
     //When the manager wants to create an event (WIP)
-    function createEvent(gameId,event,chosenPlayers) {
+    function createEvent(gameId, event, chosenPlayers) {
       events.chosenPlayers = []
       events.selectedOption = null
       socket.emit("event", {
-      gameId: gameId,
-      event: event,
-      chosenPlayers: chosenPlayers
-    })
+        gameId: gameId,
+        event: event,
+        chosenPlayers: chosenPlayers
+      })
     }
   </script>
 </footer>
+
 </html>

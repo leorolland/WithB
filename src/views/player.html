@@ -37,6 +37,7 @@
       </div>
       <!-- Game has started -->
       <div v-if="report.started">
+        <p>Time until the end : {{minutes}}m {{ seconds}}s </p>
         <p>Connected players : {{ report.players.length }}</p>
         <h2>My traits :</h2>
         <ul>
@@ -82,7 +83,20 @@
         mode: "",
         selectedMate: "",
         selectedOther: "",
-        counterBuzz: 3
+        counterBuzz: 3,
+        minutes: 0,
+        seconds: 0,
+        intervall: null
+      },
+      mounted() {
+        app.interval = setInterval(() => {
+          app.updateDiffs();
+        }, 1000);
+
+        app.updateDiffs();
+      },
+      destroyed() {
+        clearInterval(app.interval);
       },
       computed: {
         me: () => app.report.players.find(p => p.name == nickname),
@@ -113,11 +127,16 @@
             app.counterBuzz--;
           }
           //TODO : see what to do when assumption = true
-
         },
 
         close: () => {
           app.isVisible = false
+        },
+        updateDiffs() {
+          //lets figure out our diffs
+          let diff = Math.abs(new Date(app.report.endedAt) - Date.now());
+          app.minutes = Math.floor(diff / 60000);
+          app.seconds = (Math.floor(diff / 1000) % 60);
         }
       }
     })
