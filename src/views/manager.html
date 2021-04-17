@@ -57,6 +57,12 @@
             <p><span class="btn" v-on:click="createEvent(gameId,events.selectedOption,null)">Create event</span> </p>
           </div>
         </div>
+
+        <h2>Feed</h2>
+        <div v-for="msg in report.feed">
+          <div class="date">{{ stringToTime(msg.date) }}</div>
+          <span class="message">{{ msg.content }}</span><br>
+        </div> 
       </div>
 
       <!-- Game hasn't started -->
