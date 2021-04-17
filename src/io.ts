@@ -75,7 +75,7 @@ export function io(httpServer: any, games: any) {
         const game: Game = games[msg.gameId]
         game.addToFeed(`You received an event : ${msg.event.name} with ${msg.chosenPlayers?msg.chosenPlayers:"everyone"}`, msg.chosenPlayers)
         socket.to(msg.gameId).emit('report', game.jsonReport())
-
+        socket.emit('report', game.jsonReport())
         // Send a report to everyone
         socket.to(msg.gameId).emit('event',msg) // sends to other players
       })
