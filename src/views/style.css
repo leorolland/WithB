@@ -6,7 +6,22 @@
     font-family: 'Roboto', sans-serif;    
     background-color: rgb(255, 255, 255);
   }
-  body {
+  
+  .logo {
+    width: 20%;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .logo_player {
+    width: 8%;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .pink_body {
     max-width: 600px;
     margin-left: auto;
     margin-right: auto;
@@ -14,6 +29,7 @@
     background-color: rgb(255,207, 235);
     padding: 20px;
   }
+
   h1, h2, h3, p {
     margin-top: 20px;
   }

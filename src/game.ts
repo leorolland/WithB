@@ -39,7 +39,7 @@ export class Game {
   }
 
   addToFeed(msg: string, receivers?: string[]) {
-    this.feed.push({
+    this.feed.unshift({
       content: msg,
       date: new Date(),
       receivers
@@ -51,6 +51,13 @@ export class Game {
     this.lobby = []
     this.endedAt = new Date(new Date().getTime() + time*60000);
     this.started = true
+  }
+
+  findPlayer(name:string) {
+    for (var player of this.players) {
+      if (player.name==name) return player
+    }
+    return null
   }
 
 }

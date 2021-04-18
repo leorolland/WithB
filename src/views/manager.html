@@ -17,71 +17,104 @@
 </head>
 
 <body>
-  <div id="app">
-    <div v-if="!report">Loading ...</div>
-    <div v-else>
-      <h1>Manager for game {{ gameId }}</h1>
+  <div class="pink_body">
+    <div id="app">
+      <div v-if="!report">Loading ...</div>
+      <div v-else>
+        <h1>Manager for game {{ gameId }}</h1>
 
-      <!-- Game has started -->
-      <div v-if="report.started">
-        <p>Time until the end : {{minutes}}m {{ seconds}}s </p>
-        <p>Connected players : {{ report.players.length }}</p>
-        <div id="graph"></div>
+        <!-- Game has started -->
+        <div v-if="report.started">
+          <p>Time until the end : {{minutes}}m {{ seconds}}s </p>
+          <p>Connected players : {{ report.players.length }}</p>
+          <div id="graph"></div>
 
-        <!-- Base start : choose an event -->
-        <p>Trigger an event</p>
-        <v-select v-model="events.selectedOption" :options="events.options" label="name" />
-        </v-select>
+          <!-- Base start : choose an event -->
+          <p>Trigger an event</p>
+          <v-select v-model="events.selectedOption" :options="events.options" label="name" />
+          </v-select>
 
-        <!-- After choosing -->
-        <div v-if="events.selectedOption">
-          <span>Selected : {{events.selectedOption.name}}</span>
+          <!-- After choosing -->
+          <div v-if="events.selectedOption">
 
-          <!-- If you have to choose players -->
-          <div v-if="events.selectedOption.playersToChoose>0">
-            <p>You have to choose {{events.selectedOption.playersToChoose}} players (currently
-              {{events.chosenPlayers.length}})</p>
-            <v-select multiple v-model="events.chosenPlayers" :options="report.players" :reduce="player=>player.name"
-              label="name"></v-select>
+            <!-- If you have to choose players -->
+            <div v-if="events.selectedOption.playersToChoose>0">
+              <p>You have to choose {{events.selectedOption.playersToChoose}} players (currently
+                {{events.chosenPlayers.length}})</p>
+              <v-select multiple v-model="events.chosenPlayers" :options="report.players" :reduce="player=>player.name"
+                label="name"></v-select>
 
-            <!-- When you have chosen enough players -->
-            <div v-if="events.selectedOption.playersToChoose==events.chosenPlayers.length">
-              <p>{{events.chosenPlayers}}</p>
-              <p><span class="btn" v-on:click="createEvent(gameId,events.selectedOption,events.chosenPlayers)">Create
-                  event</span> </p>
+              <!-- When you have chosen enough players -->
+              <div v-if="events.selectedOption.playersToChoose==events.chosenPlayers.length">
+                <p><span class="btn" v-on:click="createEvent(gameId,events.selectedOption,events.chosenPlayers)">Create
+                    event</span> </p>
+              </div>
+            </div>
+
+            <!-- If all players will play the event-->
+            <div v-else>
+              <p><span class="btn" v-on:click="createEvent(gameId,events.selectedOption,null)">Create event</span> </p>
             </div>
           </div>
 
-          <!-- If all players will play the event-->
-          <div v-else>
-            <p><span class="btn" v-on:click="createEvent(gameId,events.selectedOption,null)">Create event</span> </p>
+
+          <p>Send a reward/penalty</p>
+          <v-select v-model="rewards.selectedOption" :options="rewards.options" label="name" />
+          </v-select>
+
+          <!-- After choosing -->
+          <div v-if="rewards.selectedOption">
+
+            <!-- Choose the player who wins/looses the reward/penalty -->
+            <p>Which player will receive that reward/penalty ?</p>
+            <v-select v-model="rewards.receiver" :options="report.players" :reduce="player=>player.name" label="name">
+            </v-select>
+
+            <!-- When you have chosen enough players -->
+            <div v-if="rewards.receiver">
+
+              <div v-if="rewards.selectedOption.target">
+                <p>Choose the targeted player</p>
+                <v-select v-model="rewards.target" :options="report.players" :reduce="player=>player.name" label="name">
+                </v-select>
+                <div v-if="rewards.target">
+                  <span class="btn" v-on:click="sendRewardPenalty()">Send</span> </p>
+                </div>
+              </div>
+              <div v-else>
+                <span class="btn" v-on:click="sendRewardPenalty()">Send</span> </p>
+              </div>
+            </div>
+
+          </div>
+
+          <h2>Feed</h2>
+          <div v-for="msg in report.feed">
+            <div class="date">{{ stringToTime(msg.date) }}</div>
+            <span class="message">{{ msg.content }}</span><br>
           </div>
         </div>
 
-        <h2>Feed</h2>
-        <div v-for="msg in report.feed">
-          <div class="date">{{ stringToTime(msg.date) }}</div>
-          <span class="message">{{ msg.content }}</span><br>
-        </div> 
-      </div>
+        <!-- Game hasn't started -->
+        <div v-else>
+          <h2>Lobby ({{ report.lobby.length }} players):</h2><br>
+          <ul>
+            <li v-for="player in report.lobby">
+              {{ player }}
+            </li>
+          </ul>
+          <p>Is everyone here ?
+            <br>How long do you want your game to last ?
+            <input type="number" v-model="duration">
+            minutes
+            <span class="btn" v-on:click="start">Start game</span>
+          </p>
+        </div>
 
-      <!-- Game hasn't started -->
-      <div v-else>
-        <h2>Lobby ({{ report.lobby.length }} players):</h2><br>
-        <ul>
-          <li v-for="player in report.lobby">
-            {{ player }}
-          </li>
-        </ul>
-        <p>Is everyone here ? 
-          <br>How long do you want your game to last ?
-          <input type= "number" v-model="duration">
-          minutes
-          <span class="btn" v-on:click="start">Start game</span> </p>
       </div>
-
     </div>
   </div>
+
 </body>
 <footer>
   <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
@@ -104,6 +137,19 @@
       chosenPlayers: []
     }
 
+    const rewards = {
+      options: [
+        { name: "Win attempt", target: false },
+        { name: "Clue", target: true },
+        { name: "Question", target: true },
+        { name: "Lose attempt", target: false },
+        { name: "Reveal information", target: false },
+      ],
+      selectedOption: null,
+      receiver: null,
+      target: null
+    }
+
     // Load a reactive Vue app
     var app = new Vue({
       el: '#app',
@@ -114,7 +160,8 @@
         minutes: 0,
         seconds: 0,
         intervall: null,
-        duration: 15
+        duration: 15,
+        rewards
       },
       mounted() {
         app.interval = setInterval(() => {
@@ -133,7 +180,12 @@
           }
           if (app.report.lobby.length > 4) socket.emit('startGame', content)
         },
+        stringToTime: (date) => {
+          const d = new Date(date)
+          return `${d.getHours()}:${d.getMinutes()}`
+        },
         createEvent,
+        sendRewardPenalty,
         updateDiffs() {
           //lets figure out our diffs
           let diff = Math.abs(new Date(app.report.endedAt) - Date.now());
@@ -206,6 +258,20 @@
         event: event,
         chosenPlayers: chosenPlayers
       })
+    }
+
+    function sendRewardPenalty() {
+      socket.emit("rewardpenalty", {
+        gameId: app.gameId,
+        content: app.rewards.selectedOption.name,
+        receiver: app.rewards.receiver,
+        target: app.rewards.target
+      })
+
+      //Resetting values
+      app.rewards.selectedOption = null
+      app.rewards.receiver = null
+      app.rewards.target = null
     }
   </script>
 </footer>

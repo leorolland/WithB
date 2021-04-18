@@ -13,100 +13,107 @@
 </head>
 
 <body>
-  <div id="app">
-    <div v-if="!report">Loading ...</div>
-    <div v-else>
-      <h4>Game {{ gameId }}</h4>
-      <div class="modal" v-bind:class="{ hidden: !isVisible}">
-        <div class="subclass">
-          <div class="cross btn" v-on:click="close">x</div>
-          <div v-if="mode=='buzz'">
-            <h2>You want to charge 2 players</h2>
-            <p> Who do you want to charge ? </p>
-            <p>Your Mate</p>
-            <select v-model="selectedMate">
-              <option v-bind:value="me.previous"> {{ me.previous }}</option>
-              <option v-bind:value="me.next"> {{ me.next }}</option>
-
-            </select>
-            <p>The player they are cheating on you with</p>
-            <select v-model="selectedOther">
-              <option v-for="player in others" v-bind:value="player.name"> {{ player.name }}</option>
-            </select>
-            <p><span class="btn" v-on:click="charge">Charge (buzzes left : {{counterBuzz }})</span></p>
-          </div>
-
-          <div v-if="mode=='treachery'">
-            <h1>Treachery/Trust</h1>
-            <p>{{event.chosenPlayers}} have to play together ! You have to choose between betraying and trusting the other one.</p>
-            <p>If you both betray each other, you both lose the game.</p>
-            <p>If only one of you chooses to betray the other one, he wins the game.</p>
-            <p>If you both trust each other, nothing happens.</p>
-            <select v-model="treachOrTrust">
-              <option> Treachery </option>
-              <option> Trust </option>
-            </select>
-            <p><span class="btn" v-on:click="treachTrust">Validate your choice</span></p>
-          </div>
-
-          <div v-if="mode=='mission'">
-            <h1>Mission</h1>
-            <p>You got a mission !</p>
-            <p>If you succeed in the allotted time, you will earn a bonus</p>
-            <p>Your mission : make one of your mate charge you</p>
-            <p>Allotted time : 5 min</p>
-          </div>
-
-         </div>
-      </div>
-      <!-- Game has started -->
-      <div v-if="report.started">
-        <p>Time until the end : {{minutes}}m {{ seconds}}s </p>
-        <p>Connected players : {{ report.players.length }}</p>
-        <h2>
-          <span class="btn btn-showhide" v-on:click="showTraits = !showTraits">
-            {{ showTraits ? '🤫' : '👀' }}
-          </span>
-          My traits
-        </h2>
-        <div v-if="showTraits">
-          <ul>
-            <li v-for="trait in me.traits">{{ trait }}</li>
-          </ul>
-        </div>
-        <h2>
-          <span class="btn btn-showhide" v-on:click="showRelations = !showRelations">
-            {{ showRelations ? '🤫' : '👀' }}
-          </span>
-          Relationships
-        </h2>
-        <div v-if="showRelations">
-          <p>I am in a relationship with <b>{{ me.previous }}</b> and <b>{{ me.next }}</b>.</p>
-          <p>They doesn't know each other and should never know !!</p>
-        </div>
-        <hr>
-        <p><span class="btn" v-on:click="buzz">🔥 Charge someone</span></p>
-        <hr>
-        <h2>Feed</h2>
-        <div v-for="msg in report.feed" v-if="!msg.receivers || msg.receivers.includes(me.name)">
-          <div class="date">{{ stringToTime(msg.date) }}</div>
-          <span class="message">{{ msg.content }}</span><br>
-        </div>
-      </div>
-
-      <!-- Game hasn't started -->
+  <img src="/logo" class="logo_player" />
+  <div class="pink_body">
+    <div id="app">
+      <div v-if="!report">Loading ...</div>
       <div v-else>
-        <h2>Lobby ({{ report.lobby.length }} players):</h2><br>
-        <ul>
-          <li v-for="player in report.lobby">
-            {{ player }}
-          </li>
-        </ul>
-        <p>Waiting players before starting...</p>
-      </div>
+        <h4>Game {{ gameId }}</h4>
+        <div class="modal" v-bind:class="{ hidden: !isVisible}">
+          <div class="subclass">
+            <!--TODO handle not showing the close button when you have to interact with the page (treachery/trust for example)-->
+            <div class="cross btn" v-on:click="close">x</div>
+            <div v-if="mode=='buzz'">
+              <h2>You want to charge 2 players</h2>
+              <p> Who do you want to charge ? </p>
+              <p>Your Mate</p>
+              <select v-model="selectedMate">
+                <option v-bind:value="me.previous"> {{ me.previous }}</option>
+                <option v-bind:value="me.next"> {{ me.next }}</option>
 
+              </select>
+              <p>The player they are cheating on you with</p>
+              <select v-model="selectedOther">
+                <option v-for="player in others" v-bind:value="player.name"> {{ player.name }}</option>
+              </select>
+              <p><span class="btn" v-on:click="charge">Charge (buzzes left : {{counterBuzz }})</span></p>
+            </div>
+
+            <div v-if="mode=='treachery'">
+              <h1>Treachery/Trust</h1>
+              <p>{{event.chosenPlayers}} have to play together ! You have to choose between betraying and trusting the
+                other one.</p>
+              <p>If you both betray each other, you both lose the game.</p>
+              <p>If only one of you chooses to betray the other one, he wins the game.</p>
+              <p>If you both trust each other, nothing happens.</p>
+              <select v-model="treachOrTrust">
+                <option> Treachery </option>
+                <option> Trust </option>
+              </select>
+              <p><span class="btn" v-on:click="treachTrust">Validate your choice</span></p>
+            </div>
+
+            <div v-if="mode=='mission'">
+              <h1>Mission</h1>
+              <p>You got a mission !</p>
+              <p>If you succeed in the allotted time, you will earn a bonus</p>
+              <p>Your mission : make one of your mates charge you</p>
+              <p>Allotted time : 5 min, starting now.</p>
+              <p>Time will be verified based on the time of charge attempt (in the feed).</p>
+            </div>
+
+          </div>
+        </div>
+        <!-- Game has started -->
+        <div v-if="report.started">
+          <p>Time until the end : {{minutes}}m {{ seconds}}s </p>
+          <p>Connected players : {{ report.players.length }}</p>
+          <h2>
+            <span class="btn btn-showhide" v-on:click="showTraits = !showTraits">
+              {{ showTraits ? '🤫' : '👀' }}
+            </span>
+            My traits
+          </h2>
+          <div v-if="showTraits">
+            <ul>
+              <li v-for="trait in me.traits">{{ trait }}</li>
+            </ul>
+          </div>
+          <h2>
+            <span class="btn btn-showhide" v-on:click="showRelations = !showRelations">
+              {{ showRelations ? '🤫' : '👀' }}
+            </span>
+            Relationships
+          </h2>
+          <div v-if="showRelations">
+            <p>I am in a relationship with <b>{{ me.previous }}</b> and <b>{{ me.next }}</b>.</p>
+            <p>They don't know each other and should never know !!</p>
+          </div>
+          <hr>
+          <p><span class="btn" v-on:click="buzz">🔥 Charge someone</span></p>
+          <hr>
+          <h2>Feed</h2>
+          <div v-for="msg in report.feed" v-if="!msg.receivers || msg.receivers.includes(me.name)">
+            <div class="date">{{ stringToTime(msg.date) }}</div>
+            <span class="message">{{ msg.content }}</span><br>
+          </div>
+        </div>
+
+        <!-- Game hasn't started -->
+        <div v-else>
+          <h2>Lobby ({{ report.lobby.length }} players):</h2><br>
+          <ul>
+            <li v-for="player in report.lobby">
+              {{ player }}
+            </li>
+          </ul>
+          <p>Waiting players before starting...</p>
+        </div>
+
+      </div>
     </div>
   </div>
+
 </body>
 <footer>
   <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
@@ -118,7 +125,7 @@
     nickname = decodeURI(nickname)
     console.log(gameId, nickname)
 
-   
+
     // Load a reactive Vue app
     var app = new Vue({
       el: '#app',
@@ -136,7 +143,7 @@
         seconds: 0,
         intervall: null,
         event: null,
-        treachOrTrust : ""
+        treachOrTrust: ""
       },
       mounted() {
         app.interval = setInterval(() => {
@@ -162,14 +169,14 @@
         handleEvent: (event) => {
           app.isVisible = true
           app.event = event
-          if (event.event.name=="Treachery/Trust"){
+          if (event.event.name == "Treachery/Trust") {
             app.mode = "treachery"
-          } else if (event.event.name=="Mission"){
-            app.mode="mission"
+          } else if (event.event.name == "Mission") {
+            app.mode = "mission"
           }
         },
         charge: () => {
-          if (app.selectedMate!="" && app.selectedOther!=""){
+          if (app.selectedMate != "" && app.selectedOther != "") {
             app.isVisible = false
             assumption = verifyAssumption(app.selectedMate, app.selectedOther)
             if (!assumption) {
@@ -198,26 +205,26 @@
             }
           }
         },
-        treachTrust:() => {
-          if (app.treachOrTrust!=""){
+        treachTrust: () => {
+          if (app.treachOrTrust != "") {
             console.log(app.treachOrTrust)
             app.isVisible = false
             socket.emit("treachTrust", {
-                gameId: gameId,
-                content: app.treachOrTrust,
-                emitter: nickname
-              })
+              gameId: gameId,
+              content: app.treachOrTrust,
+              emitter: nickname
+            })
             Toastify({
-                text: `You voted for ${app.treachOrTrust}`,
-                backgroundColor: "linear-gradient(to right, #87CEFA	, #1E90FF)",
-                duration: 5000,
-              }).showToast();
-              
+              text: `You voted for ${app.treachOrTrust}`,
+              backgroundColor: "linear-gradient(to right, #87CEFA	, #1E90FF)",
+              duration: 5000,
+            }).showToast();
+
           }
         },
         close: () => {
           app.isVisible = false,
-          app.mode = ""
+            app.mode = ""
         },
         stringToTime: (date) => {
           const d = new Date(date)
@@ -284,7 +291,7 @@
     })
     // get an event
     socket.on('event', event => {
-      if (event.chosenPlayers==null || event.chosenPlayers.includes(nickname)){ //processing the event only if it's involving the current player (we're in the list or there is no list)
+      if (event.chosenPlayers == null || event.chosenPlayers.includes(nickname)) { //processing the event only if it's involving the current player (we're in the list or there is no list)
         /*Toastify({
           text: `${JSON.stringify(event)} happen`,
           className: "info",
@@ -294,8 +301,19 @@
       }
     })
 
-    
+    socket.on('rewardpenalty', content => {
+      if (content.receiver == nickname || (content.target != null && content.target == nickname)) {
+        Toastify({
+          text: `A reward/penalty involving you just happened ! \nCheck your feed to see what's up.`,
+          backgroundColor: "linear-gradient(to right, #87CEFA	, #1E90FF)",
+          duration: 5000,
+        }).showToast();
+      }
 
+      //TODO handle buzzCount server side, right now you can reset it by refreshing the page
+      if (content.content == 'Lose attempt' && content.receiver == nickname) app.counterBuzz = Math.max(app.counterBuzz - 1, 0)
+      if (content.content == 'Win attempt' && content.receiver == nickname) app.counterBuzz++
+    })
   </script>
 </footer>
 

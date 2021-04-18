@@ -1,32 +1,43 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>With B - Join</title>
   <link rel="stylesheet" href="/style.css">
 </head>
+
 <body>
-  <img src="/logo" />
-  <h2>Welcome</h2>
-  <p>
-    With B is a roleplay game you can play with your friends or teammates.
-  </p>
-  <p>
-    Lorem ipsum dolor sit amet consectetur adipisicing elit. Maxime mollitia,
-    molestiae quas vel sint commodi repudiandae consequuntur voluptatum laborum
-    numquam blanditiis harum quisquam eius sed odit fugiat iusto fuga praesentium
-    optio, eaque rerum! Provident similique accusantium nemo autem. Veritatis
-    obcaecati tenetur iure eius earum ut molestias architecto voluptate aliquam
-    nihil, eveniet aliquid culpa officia aut!
-  </p>
-  <h2>Join a game</h2>
-  <p>Please fill the following form to join your mates :</p>
-  <input  id="id"    type="text"  placeholder="Game ID">
-  <input  id="name"  type="text"  placeholder="Your name (or nickname)">
-  <span   id="join"  class="btn">Join</span>
-  <h2>Create a game</h2>
-  <p>Create a party and invite your friends : <span id="create" class="btn">Create a game</span></p>
+  <img src="/logo" class="logo" />
+  <div class="pink_body">
+
+    <h2>Welcome</h2>
+    <h3>
+      With B is a roleplay game you can play with your friends or team mates.
+    </h3>
+    <p>
+      You are in a couple with 2 people. 💑💑<br>
+      They also are in a couple with you and another person.<br>
+      The goal is to find whom they are cheating on you with ! 🕵️‍♀️🕵️‍♂️<br>
+      Each player is given 5 random personality traits with at least one in common with both people they are in a couple
+      with.<br>
+      <br>
+      When you think you figured out with whom is one of your partners cheating on you, you can try to take a guess and
+      hit the buzz button. <br>
+      Be careful you only get 3 attempts ! 🔥🔥🔥<br>
+      <br>
+      The main goal is to talk to each other, but keep an eye on your profile : events could happen to spice things up.
+      😏
+    </p>
+    <h2>Join a game</h2>
+    <p>Please fill the following form to join your mates :</p>
+    <input id="id" type="text" placeholder="Game ID">
+    <input id="name" type="text" placeholder="Your name (or nickname)">
+    <span id="join" class="btn">Join</span>
+    <h2>Create a game</h2>
+    <p>Create a party and invite your friends : <span id="create" class="btn">Create a game</span></p>
+  </div>
 </body>
 <footer>
   <script>
@@ -41,9 +52,10 @@
 
     const create = document.getElementById('create')
     create.addEventListener('click', () => {
-      window.location.href='/create'
+      window.location.href = '/create'
     })
 
   </script>
 </footer>
+
 </html>
