@@ -37,7 +37,7 @@
                 <option v-for="player in others" v-bind:value="player.name"> {{ player.name }}</option>
               </select>
               <br/><br/>
-              <p><span class="btn" v-on:click="charge">Charge (buzzes left : {{counterBuzz }})</span></p>
+              <p><span class="btn" v-on:click="charge">Charge (buzzes left : {{me.counterBuzz}})</span></p>
             </div>
 
             <div v-if="mode=='treachery'">
@@ -142,7 +142,6 @@
         mode: "",
         selectedMate: "",
         selectedOther: "",
-        counterBuzz: 3,
         showRelations: false,
         showTraits: false,
         minutes: 0,
@@ -167,7 +166,7 @@
       },
       methods: {
         buzz: () => {
-          if (app.counterBuzz > 0) {
+          if (app.me.counterBuzz > 0) {
             app.isVisible = true
             app.mode = "buzz"
           }
@@ -188,7 +187,8 @@
             if (!assumption) {
               socket.emit("chargeFail", {
                 gameId: gameId,
-                content: [app.selectedMate, app.selectedOther]
+                content: [app.selectedMate, app.selectedOther],
+                emitter : nickname
               })
               Toastify({
                 text: `${app.selectedMate} and ${app.selectedOther} aren't in a relationship`,
@@ -196,7 +196,6 @@
                 backgroundColor: "linear-gradient(to right, #FF0000, #8B0000)",
                 duration: 5000,
               }).showToast();
-              app.counterBuzz--;
             } else {
               socket.emit("chargeSucceed", {
                 gameId: gameId,

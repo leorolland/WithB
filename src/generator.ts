@@ -9,7 +9,7 @@ export type Person = {
     score : number,
     previousFound : boolean,
     nextFound : boolean
-    //counterBuzz : number
+    counterBuzz : number
 }
 
 const NB_TRAITS: number = 5;
@@ -78,6 +78,7 @@ export function createCircle(nameList: string[]): any {
         "score" : 0,
         "previousFound" : false,
         "nextFound" : false,
+        "counterBuzz" : 3
     });
 
     for (var i = 1; i < randomNameList.length - 1; i++) {
@@ -89,6 +90,7 @@ export function createCircle(nameList: string[]): any {
             "score" : 0,
             "previousFound" : false,
             "nextFound" : false,
+            "counterBuzz" : 3
         });
     }
 
@@ -100,6 +102,7 @@ export function createCircle(nameList: string[]): any {
         "score" : 0,
         "previousFound" : false,
         "nextFound" : false,
+        "counterBuzz" : 3
     });
     return circle;
 }

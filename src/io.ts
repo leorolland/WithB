@@ -18,7 +18,7 @@ export type RewardPenalty = {
   gameId: string,
   content: string,
   receiver: string,
-  target: string
+  target?: string
 }
 
 function checkExists(games: any, gameId: string, socket: Socket) {
@@ -92,6 +92,11 @@ export function io(httpServer: any, games: any) {
       // Get the corresponding game if it exists, else leave
       if (!checkExists(games, msg.gameId, socket)) return
       const game: Game = games[msg.gameId]
+      const player = game.findPlayer(msg.emitter);
+      if (player) {
+        player.counterBuzz--;
+        console.log(player.counterBuzz)
+      }
       game.addToFeed(`${msg.content[0]} is not in a relationship with ${msg.content[1]}`)
       socket.to(msg.gameId).emit('report', game.jsonReport())
       socket.emit('report', game.jsonReport())
@@ -104,15 +109,15 @@ export function io(httpServer: any, games: any) {
       if (!checkExists(games, msg.gameId, socket)) return
       const game: Game = games[msg.gameId]
       const player = game.findPlayer(msg.emitter);
-      if(player) {
+      if (player) {
         player.score += 10 + game.diffTime()
-        if(player.next == msg.content[0]) {
+        if (player.next == msg.content[0]) {
           player.nextFound = true
         }
         else {
           player.previousFound = true
         }
-      } 
+      }
       game.addToFeed(`Someone found that ${msg.content[0]} and ${msg.content[1]} are in a relationship`, [msg.content[0], msg.content[1]])
       game.addToFeed(`You (${msg.emitter}) found that ${msg.content[0]} is cheating on you with ${msg.content[1]}`, [msg.emitter])
       socket.to(msg.gameId).emit('report', game.jsonReport())
@@ -131,33 +136,35 @@ export function io(httpServer: any, games: any) {
     socket.on('rewardpenalty', (msg: RewardPenalty) => {
       if (!checkExists(games, msg.gameId, socket)) return
       const game: Game = games[msg.gameId]
-
+      const receiver = game.findPlayer(msg.receiver);
+      if (!receiver) return
       switch (msg.content) {
         case 'Clue':
-          var player = game.findPlayer(msg.target)
-          if (player != null) {
-            var traitToSend = player.traits[Math.floor(Math.random() * 5)]
+          if(msg.target) {
+            const target = game.findPlayer(msg.target)
+            if(!target) return
+            var traitToSend = target.traits[Math.floor(Math.random() * 5)]
             game.addToFeed(`You (${msg.receiver}) received a clue about ${msg.target} : ${traitToSend}`, [msg.receiver])
             game.addToFeed(`${msg.receiver} received a clue about you (${msg.target})`, [msg.target])
           }
           break;
         case 'Question':
+          if(!msg.target) return
           game.addToFeed(`You (${msg.receiver}) received a reward : ask ONE question to ${msg.target}, they are forced to tell the truth`, [msg.receiver])
           game.addToFeed(`You (${msg.target}) received a penalty : you must answer ONE question from ${msg.receiver} without lying`, [msg.target])
           break;
         case 'Lose attempt':
           game.addToFeed(`You (${msg.receiver}) received a penalty : you've lost one attempt at charging someone`, [msg.receiver])
+          receiver.counterBuzz = Math.max(0, receiver.counterBuzz - 1)
           break;
         case 'Reveal information':
-          var player = game.findPlayer(msg.receiver)
-          if (player != null) {
-            var traitToSend = player.traits[Math.floor(Math.random() * 5)]
-            game.addToFeed(`${msg.receiver} received a penalty, you all learn one of their traits : ${traitToSend}`)
-          }
+          var traitToSend = receiver.traits[Math.floor(Math.random() * 5)]
+          game.addToFeed(`${msg.receiver} received a penalty, you all learn one of their traits : ${traitToSend}`)
           break;
-          case 'Win attempt':
-            game.addToFeed(`You (${msg.receiver}) received a reward : you get one more attempt at charging someone`, [msg.receiver])
-            break;
+        case 'Win attempt':
+          game.addToFeed(`You (${msg.receiver}) received a reward : you get one more attempt at charging someone`, [msg.receiver])
+          receiver.counterBuzz ++;
+          break;
       }
       socket.to(msg.gameId).emit('rewardpenalty', msg)
       socket.to(msg.gameId).emit('report', game.jsonReport())
