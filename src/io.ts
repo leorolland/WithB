@@ -103,6 +103,16 @@ export function io(httpServer: any, games: any) {
       // Get the corresponding game if it exists, else leave
       if (!checkExists(games, msg.gameId, socket)) return
       const game: Game = games[msg.gameId]
+      const player = game.findPlayer(msg.emitter);
+      if(player) {
+        player.score += 10 + game.diffTime()
+        if(player.next == msg.content[0]) {
+          player.nextFound = true
+        }
+        else {
+          player.previousFound = true
+        }
+      } 
       game.addToFeed(`Someone found that ${msg.content[0]} and ${msg.content[1]} are in a relationship`, [msg.content[0], msg.content[1]])
       game.addToFeed(`You (${msg.emitter}) found that ${msg.content[0]} is cheating on you with ${msg.content[1]}`, [msg.emitter])
       socket.to(msg.gameId).emit('report', game.jsonReport())

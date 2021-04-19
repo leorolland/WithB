@@ -27,8 +27,8 @@
               <p> Who do you want to charge ? <br/><br/></p>
               <p>Your Mate</p>
               <select v-model="selectedMate">
-                <option v-bind:value="me.previous"> {{ me.previous }}</option>
-                <option v-bind:value="me.next"> {{ me.next }}</option>
+                <option v-if="!me.previousFound" v-bind:value="me.previous"> {{ me.previous }}</option>
+                <option v-if="!me.nextFound" v-bind:value="me.next"> {{ me.next }}</option>
 
               </select>
               <br/><br/>
@@ -93,7 +93,7 @@
           </div>
           <div>
             
-            <h2>Score :  </h2>
+            <h2>Score : {{me.score}} </h2>
           </div>
           <hr>
           <p><span class="btn" v-on:click="buzz">🔥 Charge someone</span></p>
