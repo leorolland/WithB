@@ -22,27 +22,29 @@
         <div class="modal" v-bind:class="{ hidden: !isVisible}">
           <div class="subclass">
             <!--TODO handle not showing the close button when you have to interact with the page (treachery/trust for example)-->
-            <div class="cross btn" v-on:click="close">x</div>
+            <div class="cross btn" v-if="mode!='treachery'" v-on:click="close">x</div>
             <div v-if="mode=='buzz'">
-              <h2>You want to charge 2 players</h2>
-              <p> Who do you want to charge ? </p>
+              <h2>You want to charge 2 players<br/><br/></h2>
+              <p> Who do you want to charge ? <br/><br/></p>
               <p>Your Mate</p>
               <select v-model="selectedMate">
                 <option v-bind:value="me.previous"> {{ me.previous }}</option>
                 <option v-bind:value="me.next"> {{ me.next }}</option>
 
               </select>
+              <br/><br/>
               <p>The player they are cheating on you with</p>
               <select v-model="selectedOther">
                 <option v-for="player in others" v-bind:value="player.name"> {{ player.name }}</option>
               </select>
+              <br/><br/>
               <p><span class="btn" v-on:click="charge">Charge (buzzes left : {{counterBuzz }})</span></p>
             </div>
 
             <div v-if="mode=='treachery'">
-              <h1>Treachery/Trust<br/></h1>
+              <h1>Treachery/Trust<br/><br/></h1>
               <p>{{event.chosenPlayers}} have to play together ! You have to choose between betraying and trusting the
-                other one. <br/> </p>
+                other one. <br/><br/> </p>
               <p>If you both betray each other, you both lose the game.👎</p>
               <p>If only one of you chooses to betray the other one, he wins the mini-game.🏆</p>
               <p>If you both trust each other, nothing happens.<br/><br/></p>
@@ -50,6 +52,7 @@
                 <option> Treachery </option>
                 <option> Trust </option>
               </select>
+              <br/><br/>
               <p><span class="btn" v-on:click="treachTrust">Validate your choice</span></p>
             </div>
 
@@ -72,7 +75,7 @@
             <span class="btn btn-showhide" v-on:click="showTraits = !showTraits">
               {{ showTraits ? '🤫' : '👀' }}
             </span>
-            My traits
+            My traits <br/><br/>
           </h2>
           <div v-if="showTraits">
             <ul>
@@ -83,7 +86,7 @@
             <span class="btn btn-showhide" v-on:click="showRelations = !showRelations">
               {{ showRelations ? '🤫' : '👀' }}
             </span>
-            Relationships
+            Relationships <br/><br/>
           </h2>
           <div v-if="showRelations">
             <p>I am in a relationship with <b>{{ me.previous }}</b> and <b>{{ me.next }}</b>.</p>
