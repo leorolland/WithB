@@ -40,12 +40,12 @@
             </div>
 
             <div v-if="mode=='treachery'">
-              <h1>Treachery/Trust</h1>
+              <h1>Treachery/Trust<br/></h1>
               <p>{{event.chosenPlayers}} have to play together ! You have to choose between betraying and trusting the
-                other one.</p>
-              <p>If you both betray each other, you both lose the game.</p>
-              <p>If only one of you chooses to betray the other one, he wins the game.</p>
-              <p>If you both trust each other, nothing happens.</p>
+                other one. <br/> </p>
+              <p>If you both betray each other, you both lose the game.👎</p>
+              <p>If only one of you chooses to betray the other one, he wins the mini-game.🏆</p>
+              <p>If you both trust each other, nothing happens.<br/><br/></p>
               <select v-model="treachOrTrust">
                 <option> Treachery </option>
                 <option> Trust </option>
@@ -54,10 +54,10 @@
             </div>
 
             <div v-if="mode=='mission'">
-              <h1>Mission</h1>
-              <p>You got a mission !</p>
-              <p>If you succeed in the allotted time, you will earn a bonus</p>
-              <p>Your mission : make one of your mates charge you</p>
+              <h1>Mission<br/></h1>
+              <p>You got a mission !<br/></p>
+              <p>If you succeed in the allotted time, you will earn a bonus 🎉</p>
+              <p>Your mission : make one of your mates charge you 🔥 <br/></p>
               <p>Allotted time : 5 min, starting now.</p>
               <p>Time will be verified based on the time of charge attempt (in the feed).</p>
             </div>
