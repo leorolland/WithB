@@ -5,7 +5,7 @@ export type Person = {
     name: string,
     previous: string,
     next: string,
-    traits: string[]
+    traits: string[],
 }
 
 const NB_TRAITS: number = 5;
@@ -70,7 +70,7 @@ export function createCircle(nameList: string[]): any {
         "name": randomNameList[0],
         "previous": randomNameList[randomNameList.length - 1],
         "next": randomNameList[1],
-        "traits": generateTraits(null, null, traits)
+        "traits": generateTraits(null, null, traits),
     });
 
     for (var i = 1; i < randomNameList.length - 1; i++) {
@@ -78,7 +78,7 @@ export function createCircle(nameList: string[]): any {
             "name": randomNameList[i],
             "previous": randomNameList[i - 1],
             "next": randomNameList[(i + 1) % randomNameList.length],
-            "traits": generateTraits(circle[i - 1], null, traits)
+            "traits": generateTraits(circle[i - 1], null, traits),
         });
     }
 
@@ -86,7 +86,7 @@ export function createCircle(nameList: string[]): any {
         "name": randomNameList[randomNameList.length - 1],
         "previous": randomNameList[randomNameList.length - 2],
         "next": randomNameList[0],
-        "traits": generateTraits(circle[circle.length - 1], circle[0], traits)
+        "traits": generateTraits(circle[circle.length - 1], circle[0], traits),
     });
     return circle;
 }

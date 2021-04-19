@@ -30,7 +30,7 @@
           <div id="graph"></div>
 
           <!-- Base start : choose an event -->
-          <br/><br/><p>Trigger an event</p>
+          <br/><br/><h4>Trigger an event</h4><br/>
           <v-select v-model="events.selectedOption" :options="events.options" label="name" />
           </v-select>
 
@@ -46,19 +46,19 @@
 
               <!-- When you have chosen enough players -->
               <div v-if="events.selectedOption.playersToChoose==events.chosenPlayers.length">
-                <p><span class="btn" v-on:click="createEvent(gameId,events.selectedOption,events.chosenPlayers)">Create
+                <p><br/><span class="btn" v-on:click="createEvent(gameId,events.selectedOption,events.chosenPlayers)">Create
                     event</span> </p>
               </div>
             </div>
 
             <!-- If all players will play the event-->
             <div v-else>
-              <p><span class="btn" v-on:click="createEvent(gameId,events.selectedOption,null)">Create event</span> </p>
+              <p><br/><span class="btn" v-on:click="createEvent(gameId,events.selectedOption,null)">Create event</span> </p>
             </div>
           </div>
 
 
-          <br/><br/><p>Send a reward/penalty</p>
+          <br/><br/><h4>Send a reward/penalty</h4><br/>
           <v-select v-model="rewards.selectedOption" :options="rewards.options" label="name" />
           </v-select>
 
@@ -78,10 +78,12 @@
                 <v-select v-model="rewards.target" :options="report.players" :reduce="player=>player.name" label="name">
                 </v-select>
                 <div v-if="rewards.target">
+                  <br/>
                   <span class="btn" v-on:click="sendRewardPenalty()">Send</span> </p>
                 </div>
               </div>
               <div v-else>
+                <br/>
                 <span class="btn" v-on:click="sendRewardPenalty()">Send</span> </p>
               </div>
             </div>
