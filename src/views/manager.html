@@ -25,7 +25,7 @@
 
         <!-- Game has started -->
         <div v-if="report.started">
-          <p>Time until the end : {{minutes}}m {{ seconds}}s </p>
+          <br/><p>Time until the end : {{minutes}}m {{ seconds}}s </p>
           <p>Connected players : {{ report.players.length }}</p>
           <div id="graph"></div>
 
@@ -39,10 +39,10 @@
 
             <!-- If you have to choose players -->
             <div v-if="events.selectedOption.playersToChoose>0">
-              <p>You have to choose {{events.selectedOption.playersToChoose}} players (currently
-                {{events.chosenPlayers.length}})</p>
+              <p STYLE="padding:0 0 0 40px;">You have to choose {{events.selectedOption.playersToChoose}} players (currently
+                {{events.chosenPlayers.length}})
               <v-select multiple v-model="events.chosenPlayers" :options="report.players" :reduce="player=>player.name"
-                label="name"></v-select>
+                label="name"></v-select></p>
 
               <!-- When you have chosen enough players -->
               <div v-if="events.selectedOption.playersToChoose==events.chosenPlayers.length">
@@ -66,9 +66,9 @@
           <div v-if="rewards.selectedOption">
 
             <!-- Choose the player who wins/looses the reward/penalty -->
-            <p>Which player will receive that reward/penalty ?</p>
+            <p STYLE="padding:0 0 0 40px;">Which player will receive that reward/penalty ?
             <v-select v-model="rewards.receiver" :options="report.players" :reduce="player=>player.name" label="name">
-            </v-select>
+            </v-select></p>
 
             <!-- When you have chosen enough players -->
             <div v-if="rewards.receiver">
@@ -103,10 +103,12 @@
               {{ player }}
             </li>
           </ul>
+          <br/>
           <p>Is everyone here ?
             <br>How long do you want your game to last ?
             <input type="number" v-model="duration">
             minutes
+            <br/><br/>
             <span class="btn" v-on:click="start">Start game</span>
           </p>
         </div>
