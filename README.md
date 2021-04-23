@@ -25,7 +25,7 @@ Those “events” will appear on the website so you need to have an eye on it a
 This is an example of a solution, only the game knows this graph.
 Here, there are 5 people playing.
 
-### What (only) the game see
+### What (only) the game sees
 <img src="doc/everyone.png" width=500px>
 
 ### What Léo will see
