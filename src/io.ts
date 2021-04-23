@@ -70,6 +70,11 @@ export function io(httpServer: any, games: any) {
       // Send a report to everyone
       socket.to(content.gameId).emit('report', game.jsonReport()) // sends to other players
       socket.emit('report', game.jsonReport()) // sends to the manager
+      setTimeout(()=> {
+        game.ended = true
+        socket.to(content.gameId).emit('report', game.jsonReport()) // sends to other players
+        socket.emit('report', game.jsonReport()) // sends to the manager
+      }, game.diffTime()*1000)
     })
 
     //event
@@ -107,6 +112,7 @@ export function io(httpServer: any, games: any) {
       // Get the corresponding game if it exists, else leave
       if (!checkExists(games, msg.gameId, socket)) return
       const game: Game = games[msg.gameId]
+      if(game.ended) return
       const player = game.findPlayer(msg.emitter);
       if (player) {
         player.score += 100 + game.diffTime()

@@ -16,6 +16,7 @@ export class Game {
   endedAt: Date
   started: boolean
   feed: Message[]
+  ended : boolean
 
   constructor() {
     this.id = Math.random().toString(36).substring(2, 8).toUpperCase()
@@ -24,6 +25,7 @@ export class Game {
     this.endedAt= new Date();
     this.started = false
     this.feed = []
+    this.ended = false
   }
 
   addToLobby(nickname: string) {
