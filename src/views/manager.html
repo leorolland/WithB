@@ -89,6 +89,10 @@
             </div>
 
           </div>
+          <h2>Scores</h2>
+          <div v-for="player in report.players">
+           <p>{{player.name}} : {{player.score}} </p>
+          </div>
 
           <h2>Feed</h2>
           <div v-for="msg in report.feed">

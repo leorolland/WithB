@@ -17,6 +17,9 @@
   <div class="pink_body">
     <div id="app">
       <div v-if="!report">Loading ...</div>
+      <div v-else-if= "report.ended"><p>Game is finished</p> 
+        <p>Your score : {{me.score}} </p>
+      </div>
       <div v-else>
         <h4>Game {{ gameId }}</h4>
         <div class="modal" v-bind:class="{ hidden: !isVisible}">
@@ -44,8 +47,8 @@
               <h1>Treachery/Trust<br/><br/></h1>
               <p>{{event.chosenPlayers}} have to play together ! You have to choose between betraying and trusting the
                 other one. <br/><br/> </p>
-              <p>If you both betray each other, you both lose the game.👎</p>
-              <p>If only one of you chooses to betray the other one, he wins the mini-game.🏆</p>
+              <p>If you both betray each other, you both lose the game, and you will both get a penalty.👎</p>
+              <p>If only one of you chooses to betray the other one, the traitor wins the mini-game.🏆</p>
               <p>If you both trust each other, nothing happens.<br/><br/></p>
               <select v-model="treachOrTrust">
                 <option> Treachery </option>

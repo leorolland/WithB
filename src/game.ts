@@ -16,6 +16,7 @@ export class Game {
   endedAt: Date
   started: boolean
   feed: Message[]
+  ended : boolean
 
   constructor() {
     this.id = Math.random().toString(36).substring(2, 8).toUpperCase()
@@ -24,6 +25,7 @@ export class Game {
     this.endedAt= new Date();
     this.started = false
     this.feed = []
+    this.ended = false
   }
 
   addToLobby(nickname: string) {
@@ -62,11 +64,11 @@ export class Game {
 
   /**
    * 
-   * @returns the time before the end of the game (in minute)
+   * @returns the time before the end of the game (in seconds)
    */
   diffTime() {
   let diff = Math.abs(this.endedAt.getTime() - new Date().getTime());
-  return Math.floor(diff / 60000);
+  return Math.floor(diff / 1000);
   }
 
 }
