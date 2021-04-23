@@ -104,13 +104,12 @@ export function io(httpServer: any, games: any) {
     })
 
     socket.on('chargeSucceed', (msg: ClientMessage) => {
-      //TODO add score counter if people found the right link
       // Get the corresponding game if it exists, else leave
       if (!checkExists(games, msg.gameId, socket)) return
       const game: Game = games[msg.gameId]
       const player = game.findPlayer(msg.emitter);
       if (player) {
-        player.score += 10 + game.diffTime()
+        player.score += 100 + game.diffTime()
         if (player.next == msg.content[0]) {
           player.nextFound = true
         }
