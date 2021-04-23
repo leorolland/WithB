@@ -202,6 +202,8 @@
                 content: [app.selectedMate, app.selectedOther],
                 emitter: nickname
               })
+              app.selectedMate = ""
+              app.selectedOther = ""
               Toastify({
                 text: `Well done ! ${app.selectedMate} and ${app.selectedOther} are in a relationship`,
                 backgroundColor: "linear-gradient(to right, #00FF00, #008000)",
