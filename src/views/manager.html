@@ -74,9 +74,9 @@
             <div v-if="rewards.receiver">
 
               <div v-if="rewards.selectedOption.target">
-                <p>Choose the targeted player</p>
+                <p STYLE="padding:0 0 0 40px;">Choose the targeted player
                 <v-select v-model="rewards.target" :options="report.players" :reduce="player=>player.name" label="name">
-                </v-select>
+                </v-select></p>
                 <div v-if="rewards.target">
                   <br/>
                   <span class="btn" v-on:click="sendRewardPenalty()">Send</span> </p>
