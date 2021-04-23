@@ -43,7 +43,7 @@ puppeteer.launch({ headless: false, defaultViewport: null }).then(browser => {
 
         // Open 10 tabs to join the game
         for (let i = 0; i < 10; i++) {
-            newTab(browser, `http://${server.hostname}:${server.port}/${gameId}/${String.fromCharCode(97 + i)}%20${String.fromCharCode(97 + i)}`)
+            newTab(browser, `http://${server.hostname}:${server.port}/${gameId}/${String.fromCharCode(97 + i)}`)
         }
 
     })
