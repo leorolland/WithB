@@ -26,10 +26,10 @@ This is an example of a solution, only the game knows this graph.
 Here, there are 5 people playing.
 
 ### What (only) the game see
-<img src="doc/everyone.png">
+<img src="doc/everyone.png" width=500px>
 
 ### What Léo will see
-<img src="doc/leo.png">
+<img src="doc/leo.png" width=500px>
 
 In this example, Léo has to find with whom Marie is cheating on him (the answer is Maël) and with whom Meziane is cheating on him too (the answer is Enora)
 
