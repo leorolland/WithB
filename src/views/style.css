@@ -107,3 +107,7 @@
     color: rgb(100, 100, 100);
     font-size: 0.7em;
   }
+
+  ul {
+    margin-left: 20px;
+  }
